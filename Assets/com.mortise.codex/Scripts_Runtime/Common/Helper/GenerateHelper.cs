@@ -77,11 +77,32 @@ namespace MortiseFrame.Capsule {
                     newFileContent.AppendLine(line);
                 }
 
-                File.WriteAllText(filePath, newFileContent.ToString());
+                string processedContent = ProcessExtraLines(newFileContent.ToString());
+
+                File.WriteAllText(filePath, processedContent);
                 Debug.Log($"Updated script: {type.Name}");
             }
 
             // AssetDatabase.Refresh();
+        }
+
+        static string ProcessExtraLines(string content) {
+            string[] lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            StringBuilder processedContent = new StringBuilder();
+            int blankLineCount = 0;
+
+            foreach (string line in lines) {
+                if (string.IsNullOrWhiteSpace(line)) {
+                    blankLineCount++;
+                    if (blankLineCount < 2) {  // Only keep one blank line
+                        processedContent.AppendLine(line);
+                    }
+                } else {
+                    blankLineCount = 0;
+                    processedContent.AppendLine(line);
+                }
+            }
+            return processedContent.ToString();
         }
 
         static int SkipMethodBody(string[] lines, int start) {

@@ -22,6 +22,7 @@ namespace MortiseFrame.Capsule {
 		public string[] names;
 		public RoleType roleType;
 		public RoleType[] enemiesTypes;
+
 		public void WriteTo(byte[] dst, ref int offset) {
 			ByteWriter.Write<Int32>(dst, id, ref offset);
 			ByteWriter.WriteUTF8String(dst, roleName, ref offset);
@@ -51,3 +52,4 @@ namespace MortiseFrame.Capsule {
 	}
 
 }
+
