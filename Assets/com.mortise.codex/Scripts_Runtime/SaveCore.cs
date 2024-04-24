@@ -16,13 +16,13 @@ namespace MortiseFrame.Capsule {
             ctx.RegisterSave(saveType, fileName);
         }
 
-        public ISave Load(byte saveID) {
+        public ISave Load(byte key) {
             byte[] buff = ctx.ReadBuffer_Get();
             ctx.ReadBuffer_Clear();
 
             ISave save = null;
 
-            var saveName = ctx.GetSaveFileName(saveID);
+            var saveName = ctx.GetSaveFileName(key);
             if (ctx.path == null) {
                 buff = FileHelper.ReadFileFromPersistent(saveName);
             } else {
@@ -39,7 +39,7 @@ namespace MortiseFrame.Capsule {
                 if (len == 0) {
                     break;
                 }
-                save = ctx.GetSave(saveID) as ISave;
+                save = ctx.GetSave(key) as ISave;
 
                 save.FromBytes(buff, ref offset);
             }
@@ -51,7 +51,7 @@ namespace MortiseFrame.Capsule {
             ctx.WriteBuffer_Clear();
 
             int offset = 4;
-            byte saveID = ctx.GetSaveID(save.GetType());
+            byte key = ctx.GetKey(save.GetType());
             save.WriteTo(buff, ref offset);
 
             int len = offset;
@@ -62,7 +62,7 @@ namespace MortiseFrame.Capsule {
                 return;
             }
 
-            var saveName = ctx.GetSaveFileName(saveID);
+            var saveName = ctx.GetSaveFileName(key);
 
             if (ctx.path == null) {
                 FileHelper.WriteFileToPersistent(saveName, buff);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace MortiseFrame.Capsule {
 
-
     public class SaveContext {
 
         // Buffer
@@ -53,7 +52,7 @@ namespace MortiseFrame.Capsule {
                 var saveId = IDService.PickSaveId();
                 protocolDicts.Add(saveId, saveType);
             }
-            var id = GetSaveID(saveType);
+            var id = GetKey(saveType);
             fileNameDict[id] = fileName;
         }
 
@@ -68,15 +67,15 @@ namespace MortiseFrame.Capsule {
             return Activator.CreateInstance(type);
         }
 
-        internal string GetSaveFileName(byte saveID) {
-            var has = fileNameDict.TryGetValue(saveID, out string saveName);
+        internal string GetSaveFileName(byte key) {
+            var has = fileNameDict.TryGetValue(key, out string saveName);
             if (!has) {
-                throw new ArgumentException("No name found for the given ID.", saveID.ToString());
+                throw new ArgumentException("No name found for the given ID.", key.ToString());
             }
             return saveName;
         }
 
-        internal byte GetSaveID(Type saveType) {
+        internal byte GetKey(Type saveType) {
             var has = protocolDicts.TryGetByValue(saveType, out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
@@ -84,7 +83,7 @@ namespace MortiseFrame.Capsule {
             return id;
         }
 
-        internal byte GetSaveID<T>() {
+        internal byte GetKey<T>() {
             var has = protocolDicts.TryGetByValue(typeof(T), out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");

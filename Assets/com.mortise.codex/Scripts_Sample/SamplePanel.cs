@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace MortiseFrame.Capsule {
 
-    public class SampleEntry : MonoBehaviour {
-
-        [SerializeField] SampleRoleEntity role;
-
+    public class SamplePanel : MonoBehaviour {
         void Start() {
 
         }
