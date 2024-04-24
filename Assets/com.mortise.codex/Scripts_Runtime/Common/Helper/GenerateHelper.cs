@@ -20,19 +20,6 @@ namespace MortiseFrame.Capsule {
         static string CLASS_WRITER = "ByteWriter";
         static string CLASS_READER = "ByteReader";
 
-        static void TryWriteMethod(bool inClass,
-                               bool methodFound,
-                               string line,
-                               Type type,
-                               StringBuilder newFileContent,
-                               Func<Type, string> GenerateMethod) {
-            if (inClass && !methodFound) {
-                newFileContent.AppendLine(GenerateMethod(type));
-                newFileContent.AppendLine();
-                Debug.Log($"Write method: {type.Name}");
-            }
-        }
-
         [MenuItem("Tools/GenerateSaveMethods")]
         public static void GenerateSaveMethods() {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -82,8 +69,8 @@ namespace MortiseFrame.Capsule {
                     }
 
                     if (line.Contains("}")) {
-                        TryWriteMethod(insideClass, writeMethodFound, line, type, newFileContent, GenerateWriteToMethod);
-                        TryWriteMethod(insideClass, readMethodFound, line, type, newFileContent, GenerateFromBytesMethod);
+                        GenerateMethod(insideClass, writeMethodFound, line, type, newFileContent, GenerateWriteToMethod);
+                        GenerateMethod(insideClass, readMethodFound, line, type, newFileContent, GenerateFromBytesMethod);
                         insideClass = false;
                     }
 
@@ -111,6 +98,19 @@ namespace MortiseFrame.Capsule {
                 }
             }
             return start;
+        }
+
+        static void GenerateMethod(bool inClass,
+                              bool methodFound,
+                              string line,
+                              Type type,
+                              StringBuilder newFileContent,
+                              Func<Type, string> GenerateMethod) {
+            if (inClass && !methodFound) {
+                newFileContent.AppendLine(GenerateMethod(type));
+                newFileContent.AppendLine();
+                Debug.Log($"Generate Method: {type.Name}");
+            }
         }
 
         static string GenerateWriteToMethod(Type type) {

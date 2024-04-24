@@ -21,6 +21,19 @@ namespace MortiseFrame.Capsule {
 		public bool[] cells;
 		public string[] names;
 		public RoleType roleType;
+		public RoleType[] enemiesTypes;
+		public void WriteTo(byte[] dst, ref int offset) {
+			ByteWriter.Write<Int32>(dst, id, ref offset);
+			ByteWriter.WriteUTF8String(dst, roleName, ref offset);
+			ByteWriter.Write<Single>(dst, atk, ref offset);
+			ByteWriter.Write<Vector3>(dst, position, ref offset);
+			ByteWriter.Write<Quaternion>(dst, rotation, ref offset);
+			ByteWriter.Write<Boolean>(dst, isDead, ref offset);
+			ByteWriter.WriteArray<Boolean>(dst, cells, ref offset);
+			ByteWriter.WriteUTF8StringArray(dst, names, ref offset);
+			ByteWriter.Write<Int32>(dst, (Int32)roleType, ref offset);
+			ByteWriter.WriteArray<RoleType>(dst, enemiesTypes, ref offset);
+		}
 
 		public void FromBytes(byte[] src, ref int offset) {
 			id = ByteReader.Read<Int32>(src, ref offset);
@@ -32,18 +45,7 @@ namespace MortiseFrame.Capsule {
 			cells = ByteReader.ReadArray<Boolean>(src, ref offset);
 			names = ByteReader.ReadUTF8StringArray(src, ref offset);
 			roleType = (RoleType)ByteReader.Read<Int32>(src, ref offset);
-		}
-
-		public void WriteTo(byte[] dst, ref int offset) {
-			ByteWriter.Write<Int32>(dst, id, ref offset);
-			ByteWriter.WriteUTF8String(dst, roleName, ref offset);
-			ByteWriter.Write<Single>(dst, atk, ref offset);
-			ByteWriter.Write<Vector3>(dst, position, ref offset);
-			ByteWriter.Write<Quaternion>(dst, rotation, ref offset);
-			ByteWriter.Write<Boolean>(dst, isDead, ref offset);
-			ByteWriter.WriteArray<Boolean>(dst, cells, ref offset);
-			ByteWriter.WriteUTF8StringArray(dst, names, ref offset);
-			ByteWriter.Write<Int32>(dst, (Int32)roleType, ref offset);
+			enemiesTypes = ByteReader.ReadArray<RoleType>(src, ref offset);
 		}
 
 	}
