@@ -1,0 +1,16 @@
+{
+    "name": "TenonKit.Codex.Sample",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bee4e5034d719451e88c672e635f3782"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
