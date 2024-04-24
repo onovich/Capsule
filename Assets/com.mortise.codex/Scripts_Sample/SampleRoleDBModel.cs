@@ -22,8 +22,7 @@ namespace MortiseFrame.Capsule {
 		public bool[] cells;
 		public string[] names;
 		public RoleType roleType;
-		public RoleType[] enemiesTypes;
-		
+
 		public void WriteTo(byte[] dst, ref int offset) {
 			ByteWriter.Write<Int32>(dst, id, ref offset);
 			ByteWriter.WriteUTF8String(dst, roleName, ref offset);
@@ -35,7 +34,6 @@ namespace MortiseFrame.Capsule {
 			ByteWriter.WriteArray<Boolean>(dst, cells, ref offset);
 			ByteWriter.WriteUTF8StringArray(dst, names, ref offset);
 			ByteWriter.Write<Int32>(dst, (Int32)roleType, ref offset);
-			ByteWriter.WriteArray<RoleType>(dst, enemiesTypes, ref offset);
 		}
 
 		public void FromBytes(byte[] src, ref int offset) {
@@ -49,7 +47,6 @@ namespace MortiseFrame.Capsule {
 			cells = ByteReader.ReadArray<Boolean>(src, ref offset);
 			names = ByteReader.ReadUTF8StringArray(src, ref offset);
 			roleType = (RoleType)ByteReader.Read<Int32>(src, ref offset);
-			enemiesTypes = ByteReader.ReadArray<RoleType>(src, ref offset);
 		}
 
 	}

@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: SampleRoleEditorModel
   m_EditorClassIdentifier: 
   roleDBModel:
-    id: 0
-    roleName: 
-    level: 0
-    hp: 0
-    mp: 0
-    atk: 0
-    def: 0
-    spd: 0
-    exp: 0
-    gold: 0
+    id: 1
+    roleName: Alxes
+    atk: 112.2121
+    position: {x: 13, y: 3, z: 44}
+    cellPos: {x: 2, y: 1, z: 22}
+    rotation: {x: 33, y: 2, z: 121, w: 22}
+    isDead: 1
+    cells: 0001
+    names:
+    - Tom
+    - Jake
+    - Ono
+    roleType: 1

@@ -46,7 +46,7 @@ namespace MortiseFrame.Capsule {
             return save;
         }
 
-        public void Save(ISave save) {
+        public byte Save(ISave save) {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
@@ -59,17 +59,18 @@ namespace MortiseFrame.Capsule {
             ByteWriter.Write<int>(buff, len, ref offset);
 
             if (len == 0) {
-                return;
+                return key;
             }
 
             var saveName = ctx.GetSaveFileName(key);
 
             if (ctx.path == null) {
                 FileHelper.WriteFileToPersistent(saveName, buff);
-                return;
+                return key;
             }
             var path = Path.Combine(ctx.path, saveName);
             FileHelper.SaveBytes(path, buff, offset);
+            return key;
         }
 
     }
