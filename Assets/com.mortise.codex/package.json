@@ -1,0 +1,19 @@
+{
+    "name": "com.mortise.capsule",
+    "version": "0.0.10",
+    "unity": "2019.4",
+    "author": {
+        "name": "onovich",
+        "email": "onovich1110@gmail.com"
+    },
+    "displayName": "MortiseFrame.Capsule",
+    "description": "A lightweight binary archiving library.",
+    "documentationURL": "https://github.com/onovich/Capsule",
+    "hideInEditor": false,
+    "category": "Database",
+    "keywords": [
+        "MortiseFrame",
+        "archiving"
+    ],
+    "unityRelease": "16f1"
+}

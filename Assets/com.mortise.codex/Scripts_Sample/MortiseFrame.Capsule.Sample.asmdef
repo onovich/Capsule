@@ -2,6 +2,7 @@
     "name": "TenonKit.Codex.Sample",
     "rootNamespace": "",
     "references": [
+        "GUID:c0f9232640cc54bd398549d008dadf49",
         "GUID:bee4e5034d719451e88c672e635f3782"
     ],
     "includePlatforms": [],
