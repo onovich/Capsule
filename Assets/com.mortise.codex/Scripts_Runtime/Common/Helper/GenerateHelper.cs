@@ -190,18 +190,10 @@ namespace MortiseFrame.Capsule {
 
             // Other
             switch (fieldType.Name) {
-                case "Int32":
-                case "Single":  // float
-                case "Double":
-                case "Byte":
-                case "Boolean":
-                case "Vector3":
-                case "Quaternion":
-                    return $"Write<{fieldType.Name}>";
                 case "String":
                     return "WriteUTF8String";
                 default:
-                    return null;
+                    return $"Write<{fieldType.Name}>";
             }
         }
 
@@ -224,18 +216,10 @@ namespace MortiseFrame.Capsule {
 
             // Other
             switch (fieldType.Name) {
-                case "Int32":
-                case "Single":  // float
-                case "Double":
-                case "Byte":
-                case "Boolean":
-                case "Vector3":
-                case "Quaternion":
-                    return $"Read<{fieldType.Name}>";
                 case "String":
                     return "ReadUTF8String";
                 default:
-                    return null;
+                    return $"Read<{fieldType.Name}>";
             }
         }
     }
