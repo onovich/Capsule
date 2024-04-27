@@ -23,13 +23,9 @@ namespace MortiseFrame.Capsule {
             ISave save = null;
 
             var saveName = ctx.GetSaveFileName(key);
-            if (ctx.path == null) {
-                buff = FileHelper.ReadFileFromPersistent(saveName);
-            } else {
-                var path = Path.Combine(ctx.path, saveName);
-                if (FileHelper.Exists(path)) {
-                    FileHelper.LoadBytes(path, buff);
-                }
+            var path = Path.Combine(ctx.Path, saveName);
+            if (FileHelper.Exists(path)) {
+                FileHelper.LoadBytes(path, buff);
             }
 
             var count = buff.Length;
@@ -40,9 +36,10 @@ namespace MortiseFrame.Capsule {
                     break;
                 }
                 save = ctx.GetSave(key) as ISave;
-
                 save.FromBytes(buff, ref offset);
             }
+
+            CLog.Log($"Load from {path}, key: {key}");
             return save;
         }
 
@@ -63,13 +60,10 @@ namespace MortiseFrame.Capsule {
             }
 
             var saveName = ctx.GetSaveFileName(key);
-
-            if (ctx.path == null) {
-                FileHelper.WriteFileToPersistent(saveName, buff);
-                return key;
-            }
-            var path = Path.Combine(ctx.path, saveName);
+            var path = Path.Combine(ctx.Path, saveName);
             FileHelper.SaveBytes(path, buff, offset);
+
+            CLog.Log($"Save to {path}, key: {key}");
             return key;
         }
 

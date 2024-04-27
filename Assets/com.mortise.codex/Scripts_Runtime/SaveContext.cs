@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 namespace MortiseFrame.Capsule {
 
@@ -18,8 +20,8 @@ namespace MortiseFrame.Capsule {
         internal IDService IDService => idService;
 
         // Path
-        internal string path;
-
+        string path;
+        internal string Path => GetPath();
         internal SaveContext(int bufferLength, string path) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
@@ -27,6 +29,15 @@ namespace MortiseFrame.Capsule {
             fileNameDict = new Dictionary<byte, string>();
             idService = new IDService();
             this.path = path;
+        }
+
+        // Path
+        string GetPath() {
+            if (path == null) {
+                return Application.persistentDataPath;
+            } else {
+                return path;
+            }
         }
 
         // Buffer
