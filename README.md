@@ -57,7 +57,7 @@ if (succ) {
 ```
 
 # Project Sample
-[Oshi](https://github.com/onovich/Oshi)
+[Oshi](https://github.com/onovich/Oshi) A Sokobanlike Game In Development.
 
 # Dependency
 Serialization / Deserialization Tool 
