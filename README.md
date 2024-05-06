@@ -8,6 +8,9 @@ Capsule, a lightweight local save library suitable for small-scale single-player
 Supports arbitrary value type data structures, value type arrays, enums that can be expressed as int, and UTF-8 strings. Does not support multi-level nesting (not tested).<br/>
 **支持任意值类型数据结构、值类型数组、可表达为 int 的枚举、UTF-8 字符串。不支持多层嵌套（未测试）。**
 
+Mac and Windows have been tested. Android, iOS, and WebGL have not yet been tested.<br/>
+**Mac 和 Windows 已通过测试。Android、 iOS、WebGL 尚未测试。**
+
 # Code Generation
 After inheriting the ISave interface, define fields, implement the interface, and use Tool > GenerateSaveMethods to automatically generate the WriteTo / FromBytes methods required for serialization/deserialization.<br/>
 **继承 ISave 接口后，定义字段，实现接口，使用 Tool > GenerateSaveMethods 可自动生成序列化 / 反序列化所需的 WriteTo / FromBytes 方法。**
@@ -40,7 +43,8 @@ public struct SampleRoleDBModel : ISave {
 ```
 // Save
 saveCore = new SaveCore();
-byte key = saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave"); // The string here will be used for the file name.
+byte key = saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
+// The string here will be used for the file name.
 saveCore.Save(roleDBModel);
 ```
 
