@@ -13,16 +13,12 @@ MonoBehaviour:
   m_Name: SampleRoleEditorModel
   m_EditorClassIdentifier: 
   roleDBModel:
-    id: 222
-    roleName: 
-    atk: 111
-    position: {x: 22, y: 0, z: 0}
-    cellPos: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 222, z: 0, w: 0}
-    isDead: 0
-    cells: 000100
-    names:
-    - a
-    - v
-    - e
+    typeID: 0
+    typeName: Hero
     roleType: 1
+    speed: 5
+    position: {x: -2.0422957, y: 2.0391371, z: 0}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    isMale: 1
+    skillTypeIDArr: 0a000000140000001e000000
+  key: 1

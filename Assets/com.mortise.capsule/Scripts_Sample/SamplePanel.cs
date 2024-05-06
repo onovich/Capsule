@@ -10,8 +10,8 @@ namespace MortiseFrame.Capsule {
 
         [SerializeField] InputField input_name;
         [SerializeField] Dropdown dropdown_roleType;
-        [SerializeField] InputField input_atk;
-        [SerializeField] Toggle toggle_canFly;
+        [SerializeField] InputField input_speed;
+        [SerializeField] Toggle toggle_isMale;
         [SerializeField] Text text_skillTypeIDArr;
         [SerializeField] Button btn_randomSkill;
 
@@ -20,6 +20,7 @@ namespace MortiseFrame.Capsule {
 
         public Action BtnSaveClickHandle;
         public Action BtnLoadClickHandle;
+        public Action BtnRandomSkillClickHandle;
 
         public void Ctor() {
             btn_save.onClick.AddListener(() => {
@@ -28,6 +29,11 @@ namespace MortiseFrame.Capsule {
             btn_load.onClick.AddListener(() => {
                 BtnLoadClickHandle?.Invoke();
             });
+            btn_randomSkill.onClick.AddListener(() => {
+                BtnRandomSkillClickHandle?.Invoke();
+            });
+            dropdown_roleType.ClearOptions();
+            dropdown_roleType.AddOptions(new List<string> { "Normal", "Boss" });
         }
 
         public void RefreshLoadButtonInteractable(bool interactable) {
@@ -38,8 +44,8 @@ namespace MortiseFrame.Capsule {
             SampleRoleDBModel model = new SampleRoleDBModel();
             model.typeName = input_name.text;
             model.roleType = (RoleType)dropdown_roleType.value;
-            model.atk = float.Parse(input_atk.text);
-            model.canFly = toggle_canFly.isOn;
+            model.speed = float.Parse(input_speed.text);
+            model.isMale = toggle_isMale.isOn;
             model.skillTypeIDArr = Array.ConvertAll(text_skillTypeIDArr.text.Split(','), int.Parse);
             return model;
         }
@@ -47,9 +53,18 @@ namespace MortiseFrame.Capsule {
         public void SetData(SampleRoleEntity role) {
             input_name.text = role.typeName;
             dropdown_roleType.value = (int)role.roleType;
-            input_atk.text = role.atk.ToString();
-            toggle_canFly.isOn = role.canFly;
+            input_speed.text = role.speed.ToString();
+            toggle_isMale.isOn = role.isMale;
             text_skillTypeIDArr.text = string.Join(",", role.skillTypeIDArr);
+        }
+
+        private void OnDestroy() {
+            btn_save.onClick.RemoveAllListeners();
+            btn_load.onClick.RemoveAllListeners();
+            btn_randomSkill.onClick.RemoveAllListeners();
+            BtnSaveClickHandle = null;
+            BtnLoadClickHandle = null;
+            BtnRandomSkillClickHandle = null;
         }
 
     }

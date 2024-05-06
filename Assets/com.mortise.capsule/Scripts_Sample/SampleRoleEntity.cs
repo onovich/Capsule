@@ -9,18 +9,18 @@ namespace MortiseFrame.Capsule {
         public int typeID;
         public string typeName;
         public RoleType roleType;
-        public float atk;
-        public bool canFly;
+        public float speed;
+        public bool isMale;
         public int[] skillTypeIDArr;
 
         public void SetData(SampleRoleDBModel model) {
             typeID = model.typeID;
             typeName = model.typeName;
             roleType = model.roleType;
-            atk = model.atk;
+            speed = model.speed;
             transform.position = model.position;
             transform.rotation = model.rotation;
-            canFly = model.canFly;
+            isMale = model.isMale;
             skillTypeIDArr = model.skillTypeIDArr;
         }
 
@@ -29,10 +29,10 @@ namespace MortiseFrame.Capsule {
             model.typeID = typeID;
             model.typeName = typeName;
             model.roleType = roleType;
-            model.atk = atk;
+            model.speed = speed;
             model.position = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
             model.rotation = transform.rotation;
-            model.canFly = canFly;
+            model.isMale = isMale;
             model.skillTypeIDArr = skillTypeIDArr;
             return model;
         }
