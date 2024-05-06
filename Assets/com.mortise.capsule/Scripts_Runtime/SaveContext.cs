@@ -58,13 +58,14 @@ namespace MortiseFrame.Capsule {
         }
 
         // Protocol
-        internal void RegisterSave(Type saveType, string fileName) {
+        internal byte RegisterSave(Type saveType, string fileName) {
             if (!protocolDicts.ContainsValue(saveType)) {
                 var saveId = IDService.PickSaveId();
                 protocolDicts.Add(saveId, saveType);
             }
             var id = GetKey(saveType);
             fileNameDict[id] = fileName;
+            return id;
         }
 
         internal object GetSave(byte id) {

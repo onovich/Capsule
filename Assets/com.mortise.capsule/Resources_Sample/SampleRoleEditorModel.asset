@@ -20,6 +20,9 @@ MonoBehaviour:
     cellPos: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 222, z: 0, w: 0}
     isDead: 0
-    cells: 
-    names: []
-    roleType: 0
+    cells: 000100
+    names:
+    - a
+    - v
+    - e
+    roleType: 1

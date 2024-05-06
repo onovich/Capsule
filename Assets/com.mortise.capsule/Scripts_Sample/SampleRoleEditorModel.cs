@@ -13,9 +13,9 @@ namespace MortiseFrame.Capsule {
             CLog.Log = Debug.Log;
             if (saveCore == null) {
                 saveCore = new SaveCore();
-                saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
+                key = saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
             }
-            key = saveCore.Save(roleDBModel);
+            saveCore.Save(roleDBModel);
         }
 
         [ContextMenu("Load")]

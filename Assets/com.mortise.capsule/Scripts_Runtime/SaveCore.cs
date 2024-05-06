@@ -13,8 +13,8 @@ namespace MortiseFrame.Capsule {
             this.ctx = new SaveContext(bufferLength, path);
         }
 
-        public void Register(Type saveType, string fileName) {
-            ctx.RegisterSave(saveType, fileName);
+        public byte Register(Type saveType, string fileName) {
+            return ctx.RegisterSave(saveType, fileName);
         }
 
         public ISave Load(byte key) {
@@ -36,7 +36,7 @@ namespace MortiseFrame.Capsule {
             return save;
         }
 
-        public byte Save(ISave save) {
+        public void Save(ISave save) {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
@@ -47,8 +47,6 @@ namespace MortiseFrame.Capsule {
             var saveName = ctx.GetSaveFileName(key);
             var path = Path.Combine(ctx.Path, saveName);
             FileHelper.SaveBytes(path, buff, offset);
-
-            return key;
         }
 
     }
