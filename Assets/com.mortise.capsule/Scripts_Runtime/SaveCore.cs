@@ -38,7 +38,7 @@ namespace MortiseFrame.Capsule {
             return true;
         }
 
-        public void Save(ISave save) {
+        public string Save(ISave save) {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
@@ -51,6 +51,7 @@ namespace MortiseFrame.Capsule {
             FileHelper.SaveBytes(path, buff, offset);
 
             CLog.Log($"Save Succ: length = {offset}; key = {key}; path = {path}");
+            return path;
         }
 
         public void Clear() {
