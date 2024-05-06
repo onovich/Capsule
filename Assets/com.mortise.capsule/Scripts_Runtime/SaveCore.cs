@@ -33,6 +33,7 @@ namespace MortiseFrame.Capsule {
             var offset = 0;
             save = ctx.GetSave(key) as ISave;
             save.FromBytes(buff, ref offset);
+            CLog.Log($"Save Succ: length = {offset}; key = {key}; path = {path}");
 
             return true;
         }
@@ -48,6 +49,8 @@ namespace MortiseFrame.Capsule {
             var saveName = ctx.GetSaveFileName(key);
             var path = Path.Combine(ctx.Path, saveName);
             FileHelper.SaveBytes(path, buff, offset);
+
+            CLog.Log($"Save Succ: length = {offset}; key = {key}; path = {path}");
         }
 
     }
