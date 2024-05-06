@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SampleRoleEditorModel
   m_EditorClassIdentifier: 
   roleDBModel:
-    id: 0
+    id: 222
     roleName: 
-    atk: 0
-    position: {x: 0, y: 0, z: 0}
+    atk: 111
+    position: {x: 22, y: 0, z: 0}
     cellPos: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rotation: {x: 0, y: 222, z: 0, w: 0}
     isDead: 0
     cells: 
     names: []
