@@ -25,7 +25,8 @@ namespace MortiseFrame.Capsule {
                 saveCore = new SaveCore();
                 saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
             }
-            roleDBModel = (SampleRoleDBModel)saveCore.Load(key);
+            var succ = saveCore.TryLoad(key, out ISave iSave);
+            roleDBModel = (SampleRoleDBModel)iSave;
         }
 
     }

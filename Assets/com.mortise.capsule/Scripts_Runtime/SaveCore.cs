@@ -17,23 +17,24 @@ namespace MortiseFrame.Capsule {
             return ctx.RegisterSave(saveType, fileName);
         }
 
-        public ISave Load(byte key) {
+        public bool TryLoad(byte key, out ISave save) {
             byte[] buff = ctx.ReadBuffer_Get();
             ctx.ReadBuffer_Clear();
-
-            ISave save = null;
 
             var saveName = ctx.GetSaveFileName(key);
             var path = Path.Combine(ctx.Path, saveName);
             if (FileHelper.Exists(path)) {
                 FileHelper.LoadBytes(path, buff);
+            } else {
+                save = null;
+                return false;
             }
 
             var offset = 0;
             save = ctx.GetSave(key) as ISave;
             save.FromBytes(buff, ref offset);
 
-            return save;
+            return true;
         }
 
         public void Save(ISave save) {
