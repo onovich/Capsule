@@ -53,6 +53,10 @@ namespace MortiseFrame.Capsule {
             CLog.Log($"Save Succ: length = {offset}; key = {key}; path = {path}");
         }
 
+        public void Clear() {
+            ctx.Clear();
+        }
+
     }
 
 }
