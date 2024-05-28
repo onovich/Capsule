@@ -11,6 +11,9 @@ Supports arbitrary value type data structures, value type arrays, enums that can
 Mac and Windows have been tested. Android, iOS, and WebGL have not yet been tested.<br/>
 **Mac 和 Windows 已通过测试。Android、 iOS、WebGL 尚未测试。**
 
+Not yet supported: save file version upgrades (adding fields or adjusting field order will corrupt old saves). This should be supported in the future.<br/>
+**尚未支持兼容存档版本升级（增加字段或调整字段顺序，旧档会坏档）。将来应支持这一点。**
+
 # Code Generation
 After inheriting the ISave interface, define fields, implement the interface, and use Tool > GenerateSaveMethods to automatically generate the WriteTo / FromBytes methods required for serialization/deserialization.<br/>
 **继承 ISave 接口后，定义字段，实现接口，使用 Tool > GenerateSaveMethods 可自动生成序列化 / 反序列化所需的 WriteTo / FromBytes 方法。**
