@@ -54,8 +54,8 @@ namespace MortiseFrame.Capsule {
             return path;
         }
 
-        public void DelectAllFiles() {
-            ctx.DelectAllFiles();
+        public void DeleteAllFiles() {
+            ctx.DeleteAllFiles();
         }
 
         public void Clear() {

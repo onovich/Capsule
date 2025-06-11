@@ -103,7 +103,7 @@ namespace MortiseFrame.Capsule {
             return id;
         }
 
-        internal void DelectAllFiles() {
+        internal void DeleteAllFiles() {
             foreach (var kvp in fileNameDict) {
                 var path = Path.Combine(GetRootPath(), kvp.Value);
                 if (File.Exists(path)) {
