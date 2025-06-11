@@ -20,23 +20,23 @@ namespace MortiseFrame.Capsule {
         internal IDService IDService => idService;
 
         // Path
-        string path;
-        internal string Path => GetPath();
+        string rootPath;
+        internal string RootPath => GetRootPath();
         internal SaveContext(int bufferLength, string path) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
             protocolDicts = new BiDictionary<byte, Type>();
             fileNameDict = new Dictionary<byte, string>();
             idService = new IDService();
-            this.path = path;
+            this.rootPath = path;
         }
 
         // Path
-        string GetPath() {
-            if (path == null) {
+        string GetRootPath() {
+            if (rootPath == null) {
                 return Application.persistentDataPath;
             } else {
-                return path;
+                return rootPath;
             }
         }
 
@@ -101,6 +101,15 @@ namespace MortiseFrame.Capsule {
                 throw new ArgumentException("ID Not Found");
             }
             return id;
+        }
+
+        internal void DelectAllFiles() {
+            foreach (var kvp in fileNameDict) {
+                var path = Path.Combine(GetRootPath(), kvp.Value);
+                if (File.Exists(path)) {
+                    File.Delete(path);
+                }
+            }
         }
 
         internal void Clear() {

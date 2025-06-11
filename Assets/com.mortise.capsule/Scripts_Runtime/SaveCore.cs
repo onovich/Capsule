@@ -22,7 +22,7 @@ namespace MortiseFrame.Capsule {
             ctx.ReadBuffer_Clear();
 
             var saveName = ctx.GetSaveFileName(key);
-            var path = Path.Combine(ctx.Path, saveName);
+            var path = Path.Combine(ctx.RootPath, saveName);
             if (FileHelper.Exists(path)) {
                 FileHelper.LoadBytes(path, buff);
             } else {
@@ -47,11 +47,15 @@ namespace MortiseFrame.Capsule {
             save.WriteTo(buff, ref offset);
 
             var saveName = ctx.GetSaveFileName(key);
-            var path = Path.Combine(ctx.Path, saveName);
+            var path = Path.Combine(ctx.RootPath, saveName);
             FileHelper.SaveBytes(path, buff, offset);
 
             CLog.Log($"Save Succ: length = {offset}; key = {key}; path = {path}");
             return path;
+        }
+
+        public void DelectAllFiles() {
+            ctx.DelectAllFiles();
         }
 
         public void Clear() {
