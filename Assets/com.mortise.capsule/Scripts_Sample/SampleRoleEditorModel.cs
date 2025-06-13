@@ -10,7 +10,7 @@ namespace MortiseFrame.Capsule {
 
         [ContextMenu("Bake")]
         public void Bake() {
-            CLog.Log = Debug.Log;
+            CLog.LogHandler = Debug.Log;
             if (saveCore == null) {
                 saveCore = new SaveCore();
                 key = saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
@@ -20,7 +20,7 @@ namespace MortiseFrame.Capsule {
 
         [ContextMenu("Load")]
         public void Load() {
-            CLog.Log = Debug.Log;
+            CLog.LogHandler = Debug.Log;
             if (saveCore == null) {
                 saveCore = new SaveCore();
                 saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
