@@ -12,7 +12,7 @@ namespace MortiseFrame.Capsule {
         byte[] writeBuffer;
 
         // Protocol
-        BiDictionary<byte, Type> protocolDicts;
+        BiDictionary<byte, (Type, int)> protocolDicts;
         Dictionary<byte, string> fileNameDict;
 
         // Service
@@ -25,7 +25,7 @@ namespace MortiseFrame.Capsule {
         internal SaveContext(int bufferLength, string path) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
-            protocolDicts = new BiDictionary<byte, Type>();
+            protocolDicts = new BiDictionary<byte, (Type, int)>();
             fileNameDict = new Dictionary<byte, string>();
             idService = new IDService();
             this.rootPath = path;
@@ -58,45 +58,46 @@ namespace MortiseFrame.Capsule {
         }
 
         // Protocol
-        internal byte RegisterSave(Type saveType, string fileName) {
-            if (!protocolDicts.ContainsValue(saveType)) {
+        internal byte RegisterSave(Type saveType, int index, string fileName) {
+            if (!protocolDicts.ContainsValue((saveType, index))) {
                 var saveId = IDService.PickSaveId();
-                protocolDicts.Add(saveId, saveType);
+                protocolDicts.Add(saveId, (saveType, index));
             }
-            var id = GetKey(saveType);
-            fileNameDict[id] = fileName;
-            return id;
+            var key = GetKey(saveType, index);
+            fileNameDict[key] = fileName;
+            return key;
         }
 
         internal object GetSave(byte id) {
-            var has = protocolDicts.TryGetByKey(id, out Type type);
+            var has = protocolDicts.TryGetByKey(id, out (Type type, int index) tuple);
             if (!has) {
                 throw new ArgumentException("No type found for the given ID.", id.ToString());
             }
-            if (type == null) {
+            if (tuple.type == null) {
                 throw new ArgumentException("No type found for the given ID.", id.ToString());
             }
-            return Activator.CreateInstance(type);
+            return Activator.CreateInstance(tuple.type);
         }
 
         internal string GetSaveFileName(byte key) {
             var has = fileNameDict.TryGetValue(key, out string saveName);
             if (!has) {
-                throw new ArgumentException("No name found for the given ID.", key.ToString());
+                // throw new ArgumentException("No name found for the given ID.", key.ToString());
+                Debug.LogError($"No name found for the given ID: {key}");
             }
             return saveName;
         }
 
-        internal byte GetKey(Type saveType) {
-            var has = protocolDicts.TryGetByValue(saveType, out byte id);
+        internal byte GetKey(Type saveType, int index) {
+            var has = protocolDicts.TryGetByValue((saveType, index), out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
             return id;
         }
 
-        internal byte GetKey<T>() {
-            var has = protocolDicts.TryGetByValue(typeof(T), out byte id);
+        internal byte GetKey<T>(int index) {
+            var has = protocolDicts.TryGetByValue((typeof(T), index), out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
@@ -109,6 +110,17 @@ namespace MortiseFrame.Capsule {
                 if (File.Exists(path)) {
                     File.Delete(path);
                 }
+            }
+        }
+
+        internal void DeleteFile(byte key) {
+            if (fileNameDict.TryGetValue(key, out string fileName)) {
+                var path = Path.Combine(GetRootPath(), fileName);
+                if (File.Exists(path)) {
+                    File.Delete(path);
+                }
+            } else {
+                throw new ArgumentException("No file found for the given ID.", key.ToString());
             }
         }
 

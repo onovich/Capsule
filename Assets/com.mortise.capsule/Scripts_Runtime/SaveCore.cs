@@ -13,8 +13,8 @@ namespace MortiseFrame.Capsule {
             this.ctx = new SaveContext(bufferLength, path);
         }
 
-        public byte Register(Type saveType, string fileName) {
-            return ctx.RegisterSave(saveType, fileName);
+        public byte Register(Type saveType, string fileName, int index = 0) {
+            return ctx.RegisterSave(saveType, index, fileName);
         }
 
         public bool TryLoad(byte key, out ISave save) {
@@ -38,12 +38,11 @@ namespace MortiseFrame.Capsule {
             return true;
         }
 
-        public string Save(ISave save) {
+        public string Save(ISave save, byte key) {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
             int offset = 0;
-            byte key = ctx.GetKey(save.GetType());
             save.WriteTo(buff, ref offset);
 
             var saveName = ctx.GetSaveFileName(key);
@@ -56,6 +55,10 @@ namespace MortiseFrame.Capsule {
 
         public void DeleteAllFiles() {
             ctx.DeleteAllFiles();
+        }
+
+        public void DeleteFile(byte key) {
+            ctx.DeleteFile(key);
         }
 
         public void Clear() {
