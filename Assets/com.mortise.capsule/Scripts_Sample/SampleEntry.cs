@@ -38,7 +38,7 @@ namespace MortiseFrame.Capsule {
             var model = panel.GetData();
             model.position = role.transform.position;
             model.rotation = role.transform.rotation;
-            saveCore.Save(model);
+            saveCore.Save(model,roleSaveKey);
             em.Load();
         }
 
