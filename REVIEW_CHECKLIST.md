@@ -4,6 +4,22 @@
 
 ---
 
+## 编译检查（必须在提交前通过）
+
+新功能完成后，执行无头编译脚本确认无报错：
+
+```bash
+bash build_check.sh
+```
+
+- [ ] 脚本退出码为 0
+- [ ] 日志中无 `error CS` / `compilation failed` 关键字
+- [ ] 若编译失败，修复后重新运行，通过后再继续后续检查项
+
+> 日志输出至 `Logs/build_check.log`（已被 .gitignore 忽略）。
+
+---
+
 ## ISave 实现
 
 - [ ] 数据载体为 `struct` + `[Serializable]`，命名以 `DBModel` 结尾

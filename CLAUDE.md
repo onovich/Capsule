@@ -27,6 +27,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 示例场景路径：`Assets/com.mortise.capsule/Resources_Sample/SampleEntry.unity`
 - 已引入 Unity Test Framework（`com.unity.test-framework`）依赖
 
+### 编译检查
+
+每次完成新功能后，**提交前**必须执行无头编译脚本，确认零报错：
+
+```bash
+bash build_check.sh
+```
+
+- Unity Editor：`D:\UnityEditors\Unity 2023.2.22f1\Editor\Unity.exe`
+- 编译日志：`Logs/build_check.log`（已被 .gitignore 忽略）
+- 退出码 0 且日志无 `error CS` 方可提交
+
 ## 架构说明
 
 ### 核心流程
