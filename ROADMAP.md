@@ -22,9 +22,10 @@
 
 ## P1 — 功能完善
 
-### 异步读写支持
+### ~~异步读写支持~~ ✅ 已完成（2026-03-16）
 **背景：** 设计文档（`设计.txt`）和待办（`任务.txt`）均列为目标。
-**方案：** 提供 `SaveAsync(ISave, key)` / `TryLoadAsync(key)` 接口，使用 `async/await` + 文件流异步 API；内置锁机制防止并发读写同一 key。
+**实现：** `SaveAsync(ISave, key, ct)` / `TryLoadAsync(key, ct)`，真异步 FileStream（`useAsync: true`），每 key 独立 `SemaphoreSlim` 锁，支持 `CancellationToken`。
+**测试：** 10 个 EditMode 单元测试全部通过（同步/异步/并发/取消令牌）。
 
 ### 移动端路径适配
 **背景：** `任务.txt` 明确列出，Android 的 `persistentDataPath` 与桌面端行为有差异。

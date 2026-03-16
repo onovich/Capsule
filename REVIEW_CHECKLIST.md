@@ -18,6 +18,21 @@ bash build_check.sh
 
 > 日志输出至 `Logs/build_check.log`（已被 .gitignore 忽略）。
 
+## 单元测试（有 Scripts_Tests 时执行）
+
+```bash
+"D:/UnityEditors/Unity 2023.2.22f1/Editor/Unity.exe" -batchmode -nographics -projectPath "D:/UnityProjects/Capsule" -runTests -testPlatform EditMode -testResults "D:/UnityProjects/Capsule/Logs/TestResults.xml" -logFile "D:/UnityProjects/Capsule/Logs/test_check.log"
+```
+
+- [ ] 不加 `-quit`（`-runTests` 自行控制退出）
+- [ ] 退出码为 0
+- [ ] `TestResults.xml` 中 `failed="0"`
+
+> 注意：`asmdef` 的 `defineConstraints` 不要包含 `UNITY_INCLUDE_TESTS`，否则批处理模式下测试程序集不会被编译。
+
+## Git 提交
+- [ ] 新建目录时确认目录的 `.meta` 文件已一并 `git add`（Unity 会为每个新目录生成 `.meta`）
+
 ---
 
 ## ISave 实现
