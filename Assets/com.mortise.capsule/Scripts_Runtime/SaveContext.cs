@@ -32,7 +32,11 @@ namespace MortiseFrame.Capsule {
         byte version;
         internal byte Version => version;
 
-        internal SaveContext(int bufferLength, string path, byte version) {
+        // CRC
+        bool enableCrc;
+        internal bool EnableCrc => enableCrc;
+
+        internal SaveContext(int bufferLength, string path, byte version, bool enableCrc) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
             protocolDicts = new BiDictionary<ushort, (Type, int)>();
@@ -41,6 +45,7 @@ namespace MortiseFrame.Capsule {
             keyLocks = new Dictionary<ushort, SemaphoreSlim>();
             this.rootPath = path;
             this.version = version;
+            this.enableCrc = enableCrc;
         }
 
         // Path

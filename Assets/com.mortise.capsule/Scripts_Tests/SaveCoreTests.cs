@@ -186,6 +186,36 @@ namespace MortiseFrame.Capsule.Tests {
             Assert.IsTrue(key256 > 255, "Key 256 should exceed byte range");
         }
 
+        // ── CRC32 测试 ────────────────────────────────────────────
+
+        [Test]
+        public void Crc32_Valid_Data_Loads_Successfully() {
+            var crcCore = new SaveCore(bufferLength: 256, path: testRoot, enableCrc: true);
+            var key = crcCore.Register(typeof(MockSave), "crc_valid.bin");
+            crcCore.Save(new MockSave { IntValue = 123, FloatValue = 4.56f }, key);
+
+            var loaded = crcCore.TryLoad(key, out ISave result);
+            Assert.IsTrue(loaded);
+            Assert.AreEqual(123, ((MockSave)result).IntValue);
+        }
+
+        [Test]
+        public void Crc32_Corrupted_Data_Returns_False() {
+            var crcCore = new SaveCore(bufferLength: 256, path: testRoot, enableCrc: true);
+            var key = crcCore.Register(typeof(MockSave), "crc_corrupt.bin");
+            crcCore.Save(new MockSave { IntValue = 99 }, key);
+
+            // 手动篡改文件第 2 字节
+            var filePath = System.IO.Path.Combine(testRoot, "crc_corrupt.bin");
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+            bytes[1] ^= 0xFF;
+            System.IO.File.WriteAllBytes(filePath, bytes);
+
+            var loaded = crcCore.TryLoad(key, out ISave result);
+            Assert.IsFalse(loaded);
+            Assert.IsNull(result);
+        }
+
     }
 
 }
