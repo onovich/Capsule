@@ -8,8 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 |------|------|
 | [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md) | 核心设计原则、分层架构、目录结构规范 |
 | [CODING_STYLE.md](CODING_STYLE.md) | 命名规范、代码结构规范、Git Commit 规范 |
-| [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md) | 提交前逐项审查清单 |
+| [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md) | 提交前逐项审查清单（含单元测试命令） |
 | [ROADMAP.md](ROADMAP.md) | 已知问题分析与改进规划 |
+| [MEMORY.md](MEMORY.md) | 跨会话经验教训、工作流注意事项、当前进度 |
+
+> **AI 工作流说明：** 开始任务前先读 `CLAUDE.md`（本文件）即可。`MEMORY.md` 按需查阅——遇到测试、Git、异步相关问题时再读；每次任务结束后若有新经验教训，追加更新 `MEMORY.md`。
 
 ---
 
