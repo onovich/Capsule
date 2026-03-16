@@ -8,6 +8,12 @@ namespace MortiseFrame.Capsule {
 
     public class SamplePanel : MonoBehaviour {
 
+        [Header("Settings")]
+        [SerializeField] Text text_version;
+        [SerializeField] Toggle toggle_enableCrc;
+        [SerializeField] Toggle toggle_enableEncrypt;
+
+        [Header("Role Data")]
         [SerializeField] InputField input_name;
         [SerializeField] Dropdown dropdown_roleType;
         [SerializeField] InputField input_speed;
@@ -15,12 +21,17 @@ namespace MortiseFrame.Capsule {
         [SerializeField] Text text_skillTypeIDArr;
         [SerializeField] Button btn_randomSkill;
 
+        [Header("Actions")]
         [SerializeField] Button btn_save;
         [SerializeField] Button btn_load;
 
         public Action BtnSaveClickHandle;
         public Action BtnLoadClickHandle;
         public Action BtnRandomSkillClickHandle;
+
+        public byte Version { get; private set; } = 1;
+        public bool EnableCrc => toggle_enableCrc.isOn;
+        public bool EnableEncrypt => toggle_enableEncrypt.isOn;
 
         public void Ctor() {
             btn_save.onClick.AddListener(() => {
@@ -34,6 +45,10 @@ namespace MortiseFrame.Capsule {
             });
             dropdown_roleType.ClearOptions();
             dropdown_roleType.AddOptions(new List<string> { "Normal", "Boss" });
+
+            text_version.text = $"Version: {Version}";
+            toggle_enableCrc.isOn = false;
+            toggle_enableEncrypt.isOn = false;
         }
 
         public void RefreshLoadButtonInteractable(bool interactable) {

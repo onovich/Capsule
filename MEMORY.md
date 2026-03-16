@@ -25,6 +25,17 @@
 
 - 新建目录后必须检查**目录本身的 `.meta` 文件**是否已加入暂存区（`git status` 确认）
 - `git add Assets/path/to/Dir/` 会包含目录内文件的 `.meta`，但**目录本身的 `.meta`**（`Dir.meta`）需单独 `git add`
+- **任务完成后必须清理 unstaged 变更**：要么 commit、要么 discard、要么 ignore，保持工作区干净（除非有正在开发的未完成任务）
+- Unity 场景文件（.unity）的自动元数据更新（serializedVersion、RenderSettings 等）应该提交，保持与当前 Unity 版本一致
+
+---
+
+## Git Commit 规范
+
+- **功能修改使用 `modify`，不使用 `update`**：`<feature> modify: 描述`
+- **版本号提交格式**：`<version> x.y.z`（不写 "版本号升至"，直接写版本号）
+- **版本号提交必须同步打 tag**：`git tag vx.y.z` 与 commit 同时进行
+- `<engine> update` 仅用于 Unity 引擎版本升级
 
 ---
 
