@@ -11,8 +11,11 @@ namespace MortiseFrame.Capsule {
 
         SaveContext ctx;
 
-        public SaveCore(int bufferLength = 4069, string path = null, byte version = 1, bool enableCrc = false) {
-            this.ctx = new SaveContext(bufferLength, path, version, enableCrc);
+        public SaveCore(int bufferLength = 4069, string path = null, byte version = 1,
+            bool enableCrc = false,
+            Func<byte[], byte[]> encryptFunc = null,
+            Func<byte[], byte[]> decryptFunc = null) {
+            this.ctx = new SaveContext(bufferLength, path, version, enableCrc, encryptFunc, decryptFunc);
         }
 
         public ushort Register(Type saveType, string fileName, int index = 0) {
@@ -32,15 +35,11 @@ namespace MortiseFrame.Capsule {
                 return false;
             }
 
-            if (buff[0] != ctx.Version) {
-                CLog.LogWarning($"版本不匹配：文件版本 {buff[0]}，当前版本 {ctx.Version}；key = {key}");
-                save = null;
-                return false;
-            }
+            long fileSize = new FileInfo(path).Length;
+            int dataLength = (int)fileSize;
 
             if (ctx.EnableCrc) {
-                long fileSize = new FileInfo(path).Length;
-                int dataLength = (int)fileSize - 4;
+                dataLength = (int)fileSize - 4;
                 if (dataLength < 1) {
                     CLog.LogError($"CRC 校验失败：文件过短；key = {key}");
                     save = null;
@@ -55,9 +54,25 @@ namespace MortiseFrame.Capsule {
                 }
             }
 
+            byte[] readData = buff;
+            if (ctx.DecryptFunc != null) {
+                byte[] cipher = new byte[dataLength - 1];
+                Array.Copy(buff, 1, cipher, 0, cipher.Length);
+                byte[] plain = ctx.DecryptFunc(cipher);
+                readData = new byte[1 + plain.Length];
+                readData[0] = buff[0];
+                Array.Copy(plain, 0, readData, 1, plain.Length);
+            }
+
+            if (readData[0] != ctx.Version) {
+                CLog.LogWarning($"版本不匹配：文件版本 {readData[0]}，当前版本 {ctx.Version}；key = {key}");
+                save = null;
+                return false;
+            }
+
             var offset = 1;
             save = ctx.GetSave(key) as ISave;
-            save.FromBytes(buff, ref offset);
+            save.FromBytes(readData, ref offset);
             CLog.Log($"Load Succ: length = {offset}; key = {key}; path = {path}");
 
             return true;
@@ -71,18 +86,35 @@ namespace MortiseFrame.Capsule {
             int offset = 1;
             save.WriteTo(buff, ref offset);
 
-            int writeLength = offset;
+            // 加密：对数据段（不含版本字节）加密，结果写回 buff
+            byte[] writeData;
+            if (ctx.EncryptFunc != null) {
+                byte[] plain = new byte[offset - 1];
+                Array.Copy(buff, 1, plain, 0, plain.Length);
+                byte[] cipher = ctx.EncryptFunc(plain);
+                writeData = new byte[1 + cipher.Length];
+                writeData[0] = ctx.Version;
+                Array.Copy(cipher, 0, writeData, 1, cipher.Length);
+            } else {
+                writeData = buff;
+            }
+
+            int writeLength = (ctx.EncryptFunc != null) ? writeData.Length : offset;
+
             if (ctx.EnableCrc) {
-                if (offset + 4 > buff.Length) {
-                    throw new InvalidOperationException(
-                        $"存档数据+CRC 超出缓冲区大小！需要 {offset + 4} 字节，但缓冲区只有 {buff.Length} 字节。" +
-                        $"请在 SaveCore 构造时增大 bufferLength 参数。"
-                    );
-                }
-                uint crc = Crc32Helper.Compute(buff, 0, offset);
-                Crc32Helper.Append(buff, offset, crc);
-                writeLength = offset + 4;
-            } else if (offset > buff.Length) {
+                int crcNeeded = writeLength + 4;
+                byte[] crcData = new byte[crcNeeded];
+                Array.Copy(writeData, 0, crcData, 0, writeLength);
+                uint crc = Crc32Helper.Compute(crcData, 0, writeLength);
+                Crc32Helper.Append(crcData, writeLength, crc);
+                var saveName2 = ctx.GetSaveFileName(key);
+                var path2 = Path.Combine(ctx.RootPath, saveName2);
+                FileHelper.SaveBytes(path2, crcData, crcNeeded);
+                CLog.Log($"Save Succ: length = {crcNeeded}; key = {key}; path = {path2}");
+                return path2;
+            }
+
+            if (ctx.EncryptFunc == null && offset > buff.Length) {
                 throw new InvalidOperationException(
                     $"存档数据超出缓冲区大小！需要 {offset} 字节，但缓冲区只有 {buff.Length} 字节。" +
                     $"请在 SaveCore 构造时增大 bufferLength 参数。"
@@ -91,7 +123,7 @@ namespace MortiseFrame.Capsule {
 
             var saveName = ctx.GetSaveFileName(key);
             var path = Path.Combine(ctx.RootPath, saveName);
-            FileHelper.SaveBytes(path, buff, writeLength);
+            FileHelper.SaveBytes(path, writeData, writeLength);
 
             CLog.Log($"Save Succ: length = {writeLength}; key = {key}; path = {path}");
             return path;
@@ -119,18 +151,34 @@ namespace MortiseFrame.Capsule {
                 int offset = 1;
                 save.WriteTo(buff, ref offset);
 
-                int writeLength = offset;
+                byte[] writeData;
+                if (ctx.EncryptFunc != null) {
+                    byte[] plain = new byte[offset - 1];
+                    Array.Copy(buff, 1, plain, 0, plain.Length);
+                    byte[] cipher = ctx.EncryptFunc(plain);
+                    writeData = new byte[1 + cipher.Length];
+                    writeData[0] = ctx.Version;
+                    Array.Copy(cipher, 0, writeData, 1, cipher.Length);
+                } else {
+                    writeData = buff;
+                }
+
+                int writeLength = (ctx.EncryptFunc != null) ? writeData.Length : offset;
+
                 if (ctx.EnableCrc) {
-                    if (offset + 4 > buff.Length) {
-                        throw new InvalidOperationException(
-                            $"存档数据+CRC 超出缓冲区大小！需要 {offset + 4} 字节，但缓冲区只有 {buff.Length} 字节。" +
-                            $"请在 SaveCore 构造时增大 bufferLength 参数。"
-                        );
-                    }
-                    uint crc = Crc32Helper.Compute(buff, 0, offset);
-                    Crc32Helper.Append(buff, offset, crc);
-                    writeLength = offset + 4;
-                } else if (offset > buff.Length) {
+                    int crcNeeded = writeLength + 4;
+                    byte[] crcData = new byte[crcNeeded];
+                    Array.Copy(writeData, 0, crcData, 0, writeLength);
+                    uint crc = Crc32Helper.Compute(crcData, 0, writeLength);
+                    Crc32Helper.Append(crcData, writeLength, crc);
+                    var saveName2 = ctx.GetSaveFileName(key);
+                    var path2 = Path.Combine(ctx.RootPath, saveName2);
+                    await FileHelper.SaveBytesAsync(path2, crcData, crcNeeded, ct);
+                    CLog.Log($"SaveAsync Succ: length = {crcNeeded}; key = {key}; path = {path2}");
+                    return path2;
+                }
+
+                if (ctx.EncryptFunc == null && offset > buff.Length) {
                     throw new InvalidOperationException(
                         $"存档数据超出缓冲区大小！需要 {offset} 字节，但缓冲区只有 {buff.Length} 字节。" +
                         $"请在 SaveCore 构造时增大 bufferLength 参数。"
@@ -139,7 +187,7 @@ namespace MortiseFrame.Capsule {
 
                 var saveName = ctx.GetSaveFileName(key);
                 var path = Path.Combine(ctx.RootPath, saveName);
-                await FileHelper.SaveBytesAsync(path, buff, writeLength, ct);
+                await FileHelper.SaveBytesAsync(path, writeData, writeLength, ct);
 
                 CLog.Log($"SaveAsync Succ: length = {writeLength}; key = {key}; path = {path}");
                 return path;
@@ -163,14 +211,11 @@ namespace MortiseFrame.Capsule {
                 byte[] buff = new byte[ctx.BufferLength];
                 await FileHelper.LoadBytesAsync(path, buff, ct);
 
-                if (buff[0] != ctx.Version) {
-                    CLog.LogWarning($"版本不匹配：文件版本 {buff[0]}，当前版本 {ctx.Version}；key = {key}");
-                    return (false, null);
-                }
+                long fileSize = new FileInfo(path).Length;
+                int dataLength = (int)fileSize;
 
                 if (ctx.EnableCrc) {
-                    long fileSize = new FileInfo(path).Length;
-                    int dataLength = (int)fileSize - 4;
+                    dataLength = (int)fileSize - 4;
                     if (dataLength < 1) {
                         CLog.LogError($"CRC 校验失败：文件过短；key = {key}");
                         return (false, null);
@@ -183,9 +228,24 @@ namespace MortiseFrame.Capsule {
                     }
                 }
 
+                byte[] readData = buff;
+                if (ctx.DecryptFunc != null) {
+                    byte[] cipher = new byte[dataLength - 1];
+                    Array.Copy(buff, 1, cipher, 0, cipher.Length);
+                    byte[] plain = ctx.DecryptFunc(cipher);
+                    readData = new byte[1 + plain.Length];
+                    readData[0] = buff[0];
+                    Array.Copy(plain, 0, readData, 1, plain.Length);
+                }
+
+                if (readData[0] != ctx.Version) {
+                    CLog.LogWarning($"版本不匹配：文件版本 {readData[0]}，当前版本 {ctx.Version}；key = {key}");
+                    return (false, null);
+                }
+
                 int offset = 1;
                 var save = ctx.GetSave(key) as ISave;
-                save.FromBytes(buff, ref offset);
+                save.FromBytes(readData, ref offset);
 
                 CLog.Log($"TryLoadAsync Succ: length = {offset}; key = {key}; path = {path}");
                 return (true, save);

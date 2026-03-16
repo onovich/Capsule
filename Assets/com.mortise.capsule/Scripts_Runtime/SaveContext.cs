@@ -36,7 +36,14 @@ namespace MortiseFrame.Capsule {
         bool enableCrc;
         internal bool EnableCrc => enableCrc;
 
-        internal SaveContext(int bufferLength, string path, byte version, bool enableCrc) {
+        // Encryption
+        Func<byte[], byte[]> encryptFunc;
+        Func<byte[], byte[]> decryptFunc;
+        internal Func<byte[], byte[]> EncryptFunc => encryptFunc;
+        internal Func<byte[], byte[]> DecryptFunc => decryptFunc;
+
+        internal SaveContext(int bufferLength, string path, byte version, bool enableCrc,
+            Func<byte[], byte[]> encryptFunc, Func<byte[], byte[]> decryptFunc) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
             protocolDicts = new BiDictionary<ushort, (Type, int)>();
@@ -46,6 +53,8 @@ namespace MortiseFrame.Capsule {
             this.rootPath = path;
             this.version = version;
             this.enableCrc = enableCrc;
+            this.encryptFunc = encryptFunc;
+            this.decryptFunc = decryptFunc;
         }
 
         // Path

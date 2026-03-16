@@ -216,6 +216,28 @@ namespace MortiseFrame.Capsule.Tests {
             Assert.IsNull(result);
         }
 
+        // ── 加密测试 ──────────────────────────────────────────────
+
+        [Test]
+        public void Encrypt_RoundTrip_With_Simple_Xor() {
+            byte xorKey = 0xAB;
+            byte[] Xor(byte[] data) {
+                var result = new byte[data.Length];
+                for (int i = 0; i < data.Length; i++) result[i] = (byte)(data[i] ^ xorKey);
+                return result;
+            }
+
+            var encCore = new SaveCore(bufferLength: 256, path: testRoot,
+                encryptFunc: Xor, decryptFunc: Xor);
+            var key = encCore.Register(typeof(MockSave), "encrypt_xor.bin");
+            encCore.Save(new MockSave { IntValue = 77, FloatValue = 1.23f }, key);
+
+            var loaded = encCore.TryLoad(key, out ISave result);
+            Assert.IsTrue(loaded);
+            Assert.AreEqual(77, ((MockSave)result).IntValue);
+            Assert.AreEqual(1.23f, ((MockSave)result).FloatValue, delta: 0.0001f);
+        }
+
     }
 
 }
