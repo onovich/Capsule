@@ -172,6 +172,20 @@ namespace MortiseFrame.Capsule.Tests {
             Assert.IsNull(result);
         }
 
+        // ── IDService ushort 测试 ──────────────────────────────────
+
+        [Test]
+        public void IDService_ushort_Supports_More_Than_255_Keys() {
+            var testCore = new SaveCore(bufferLength: 256, path: testRoot);
+            for (int i = 0; i < 300; i++) {
+                var key = testCore.Register(typeof(MockSave), $"key_{i}.bin", index: i);
+                Assert.IsTrue(key > 0, $"Key {i} should be positive");
+            }
+            // 验证第 256 个 key 不会溢出归零
+            var key256 = testCore.Register(typeof(MockSave), "key_300.bin", index: 300);
+            Assert.IsTrue(key256 > 255, "Key 256 should exceed byte range");
+        }
+
     }
 
 }

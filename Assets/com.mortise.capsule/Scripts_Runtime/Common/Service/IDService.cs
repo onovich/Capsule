@@ -2,13 +2,13 @@ namespace MortiseFrame.Capsule {
 
     public class IDService {
 
-        public byte saveIdRecord;
+        public ushort saveIdRecord;
 
         public IDService() {
             saveIdRecord = 0;
         }
 
-        public byte PickSaveId() {
+        public ushort PickSaveId() {
             return ++saveIdRecord;
         }
 

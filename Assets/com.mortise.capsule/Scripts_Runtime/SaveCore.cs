@@ -15,11 +15,11 @@ namespace MortiseFrame.Capsule {
             this.ctx = new SaveContext(bufferLength, path, version);
         }
 
-        public byte Register(Type saveType, string fileName, int index = 0) {
+        public ushort Register(Type saveType, string fileName, int index = 0) {
             return ctx.RegisterSave(saveType, index, fileName);
         }
 
-        public bool TryLoad(byte key, out ISave save) {
+        public bool TryLoad(ushort key, out ISave save) {
             byte[] buff = ctx.ReadBuffer_Get();
             ctx.ReadBuffer_Clear();
 
@@ -46,7 +46,7 @@ namespace MortiseFrame.Capsule {
             return true;
         }
 
-        public string Save(ISave save, byte key) {
+        public string Save(ISave save, ushort key) {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
@@ -73,7 +73,7 @@ namespace MortiseFrame.Capsule {
             ctx.DeleteAllFiles();
         }
 
-        public void DeleteFile(byte key) {
+        public void DeleteFile(ushort key) {
             ctx.DeleteFile(key);
         }
 
@@ -81,7 +81,7 @@ namespace MortiseFrame.Capsule {
             ctx.Clear();
         }
 
-        public async Task<string> SaveAsync(ISave save, byte key,
+        public async Task<string> SaveAsync(ISave save, ushort key,
             CancellationToken ct = default) {
             var sem = ctx.GetOrCreateLock(key);
             await sem.WaitAsync(ct);
@@ -109,7 +109,7 @@ namespace MortiseFrame.Capsule {
             }
         }
 
-        public async Task<(bool success, ISave save)> TryLoadAsync(byte key,
+        public async Task<(bool success, ISave save)> TryLoadAsync(ushort key,
             CancellationToken ct = default) {
             var sem = ctx.GetOrCreateLock(key);
             await sem.WaitAsync(ct);

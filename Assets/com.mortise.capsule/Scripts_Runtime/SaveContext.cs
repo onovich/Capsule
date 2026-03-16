@@ -13,15 +13,15 @@ namespace MortiseFrame.Capsule {
         byte[] writeBuffer;
 
         // Protocol
-        BiDictionary<byte, (Type, int)> protocolDicts;
-        Dictionary<byte, string> fileNameDict;
+        BiDictionary<ushort, (Type, int)> protocolDicts;
+        Dictionary<ushort, string> fileNameDict;
 
         // Service
         IDService idService;
         internal IDService IDService => idService;
 
         // Lock
-        Dictionary<byte, SemaphoreSlim> keyLocks;
+        Dictionary<ushort, SemaphoreSlim> keyLocks;
 
         // Path
         string rootPath;
@@ -35,10 +35,10 @@ namespace MortiseFrame.Capsule {
         internal SaveContext(int bufferLength, string path, byte version) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
-            protocolDicts = new BiDictionary<byte, (Type, int)>();
-            fileNameDict = new Dictionary<byte, string>();
+            protocolDicts = new BiDictionary<ushort, (Type, int)>();
+            fileNameDict = new Dictionary<ushort, string>();
             idService = new IDService();
-            keyLocks = new Dictionary<byte, SemaphoreSlim>();
+            keyLocks = new Dictionary<ushort, SemaphoreSlim>();
             this.rootPath = path;
             this.version = version;
         }
@@ -70,7 +70,7 @@ namespace MortiseFrame.Capsule {
         }
 
         // Protocol
-        internal byte RegisterSave(Type saveType, int index, string fileName) {
+        internal ushort RegisterSave(Type saveType, int index, string fileName) {
             if (!protocolDicts.ContainsValue((saveType, index))) {
                 var saveId = IDService.PickSaveId();
                 protocolDicts.Add(saveId, (saveType, index));
@@ -83,7 +83,7 @@ namespace MortiseFrame.Capsule {
             return key;
         }
 
-        internal SemaphoreSlim GetOrCreateLock(byte key) {
+        internal SemaphoreSlim GetOrCreateLock(ushort key) {
             if (!keyLocks.TryGetValue(key, out var sem)) {
                 sem = new SemaphoreSlim(1, 1);
                 keyLocks[key] = sem;
@@ -91,7 +91,7 @@ namespace MortiseFrame.Capsule {
             return sem;
         }
 
-        internal object GetSave(byte id) {
+        internal object GetSave(ushort id) {
             var has = protocolDicts.TryGetByKey(id, out (Type type, int index) tuple);
             if (!has) {
                 throw new ArgumentException("No type found for the given ID.", id.ToString());
@@ -102,25 +102,24 @@ namespace MortiseFrame.Capsule {
             return Activator.CreateInstance(tuple.type);
         }
 
-        internal string GetSaveFileName(byte key) {
+        internal string GetSaveFileName(ushort key) {
             var has = fileNameDict.TryGetValue(key, out string saveName);
             if (!has) {
-                // throw new ArgumentException("No name found for the given ID.", key.ToString());
                 Debug.LogError($"No name found for the given ID: {key}");
             }
             return saveName;
         }
 
-        internal byte GetKey(Type saveType, int index) {
-            var has = protocolDicts.TryGetByValue((saveType, index), out byte id);
+        internal ushort GetKey(Type saveType, int index) {
+            var has = protocolDicts.TryGetByValue((saveType, index), out ushort id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
             return id;
         }
 
-        internal byte GetKey<T>(int index) {
-            var has = protocolDicts.TryGetByValue((typeof(T), index), out byte id);
+        internal ushort GetKey<T>(int index) {
+            var has = protocolDicts.TryGetByValue((typeof(T), index), out ushort id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
@@ -136,7 +135,7 @@ namespace MortiseFrame.Capsule {
             }
         }
 
-        internal void DeleteFile(byte key) {
+        internal void DeleteFile(ushort key) {
             if (fileNameDict.TryGetValue(key, out string fileName)) {
                 var path = Path.Combine(GetRootPath(), fileName);
                 if (File.Exists(path)) {

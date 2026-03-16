@@ -6,7 +6,7 @@ namespace MortiseFrame.Capsule {
 
         public SampleRoleDBModel roleDBModel;
         SaveCore saveCore;
-        [SerializeField] byte key;
+        [SerializeField] ushort key;
 
         [ContextMenu("Bake")]
         public void Bake() {

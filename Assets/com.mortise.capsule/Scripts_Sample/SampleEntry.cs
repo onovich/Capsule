@@ -11,7 +11,7 @@ namespace MortiseFrame.Capsule {
         [SerializeField] SamplePanel panel;
         [SerializeField] SampleRoleEditorModel em;
         SaveCore saveCore;
-        byte roleSaveKey;
+        ushort roleSaveKey;
 
         async void Start() {
 
