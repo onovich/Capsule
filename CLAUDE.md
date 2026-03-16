@@ -83,11 +83,12 @@ bash build_check.sh
 
 ## 提交信息规范
 
-格式：`<scope> <type>: <描述>`，描述使用中文。
+格式：`<scope> <type>: <描述>`，描述使用中文。详见 [CODING_STYLE.md](CODING_STYLE.md)。
 
 ```
 <feature> add: 描述
 <feature> fix: 描述
-<engine> update: 描述
 <sample> fix: 描述
+<doc> add: 描述
+<engine> update: 引擎版本号
 ```

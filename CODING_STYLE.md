@@ -125,7 +125,8 @@ CLog.LogHandler = Debug.Log;
 |-------|------|
 | `<feature>` | 核心功能变更 |
 | `<sample>` | 示例代码变更 |
-| `<engine>` | Unity 版本 / 编辑器配置变更 |
+| `<doc>` | 文档变更（README、CLAUDE.md、架构指南等） |
+| `<engine>` | Unity 引擎版本升级 |
 
 | type | 含义 |
 |------|------|
@@ -138,5 +139,7 @@ CLog.LogHandler = Debug.Log;
 <feature> add: 支持同类型多存档槽
 <feature> fix: Save 应传入 key
 <sample> fix: Sample 报错
+<doc> add: 新增架构指南文档
+<doc> update: 完善编译检查流程说明
 <engine> update: 2023.2.22f1
 ```
