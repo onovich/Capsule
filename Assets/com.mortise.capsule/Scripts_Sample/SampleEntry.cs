@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MortiseFrame.Capsule {
@@ -12,16 +13,16 @@ namespace MortiseFrame.Capsule {
         SaveCore saveCore;
         byte roleSaveKey;
 
-        void Start() {
+        async void Start() {
 
             saveCore = new SaveCore();
             roleSaveKey = saveCore.Register(typeof(SampleRoleDBModel), "SampleRoleSave");
 
             panel.Ctor();
-            panel.BtnSaveClickHandle = () => Save();
-            panel.BtnLoadClickHandle = () => Load();
+            panel.BtnSaveClickHandle = () => _ = SaveAsync();
+            panel.BtnLoadClickHandle = () => _ = LoadAsync();
             panel.BtnRandomSkillClickHandle = () => RandomSkill();
-            var succ = saveCore.TryLoad(roleSaveKey, out ISave iSave);
+            var (succ, iSave) = await saveCore.TryLoadAsync(roleSaveKey);
             panel.RefreshLoadButtonInteractable(succ);
 
             if (succ) {
@@ -34,16 +35,16 @@ namespace MortiseFrame.Capsule {
 
         }
 
-        void Save() {
+        async Task SaveAsync() {
             var model = panel.GetData();
             model.position = role.transform.position;
             model.rotation = role.transform.rotation;
-            saveCore.Save(model,roleSaveKey);
+            await saveCore.SaveAsync(model, roleSaveKey);
             em.Load();
         }
 
-        void Load() {
-            var succ = saveCore.TryLoad(roleSaveKey, out ISave iSave);
+        async Task LoadAsync() {
+            var (succ, iSave) = await saveCore.TryLoadAsync(roleSaveKey);
             if (succ) {
                 var model = (SampleRoleDBModel)iSave;
                 role.SetData(model);
