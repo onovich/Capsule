@@ -6,17 +6,17 @@
 
 ## P0 — 正确性与稳定性
 
-### 缓冲区溢出无保护
+### ~~缓冲区溢出无保护~~ ✅ 已完成
 **问题：** `SaveCore` 构造时指定固定 `bufferLength`，若存档数据超过该大小会静默截断或越界。
-**方案：** 在 `WriteTo` 执行后校验 `offset <= buffer.Length`，超出时抛出明确异常或动态扩容。
+**实现：** `SaveCore.Save` 中在 `WriteTo` 后校验 `offset > buff.Length`，超出时抛出 `InvalidOperationException`。
 
-### `FileHelper` API 不一致
-**问题：** 部分方法接受完整 `path` 参数（`SaveBytes` / `LoadBytes`），部分方法内部硬编码使用 `persistentDataPath`（`WriteFileToPersistent` / `ReadFileFromPersistent`），调用者容易混淆。
-**方案：** 统一为接受完整路径的风格，移除内部硬编码路径方法，或明确命名区分。
+### ~~`FileHelper` API 不一致~~ ✅ 已完成
+**问题：** 部分方法接受完整 `path` 参数，部分方法内部硬编码使用 `persistentDataPath`，调用者容易混淆。
+**实现：** 移除 `WriteFileToPersistent` / `ReadFileFromPersistent` / `CreateDirIfNotExist` / `GetPersistentDir` 四个死方法，统一为完整路径风格。
 
-### `CLog` Warning/Error 回调为 `internal`
-**问题：** `LogWarningHandler` 和 `LogErrorHandler` 是 `internal`，库外部只能注册 `LogHandler`，警告和错误日志无法被外部系统捕获。
-**方案：** 将三个 Handler 统一改为 `public`。
+### ~~`CLog` Warning/Error 回调为 `internal`~~ ✅ 已完成
+**问题：** `LogWarningHandler` 和 `LogErrorHandler` 是 `internal`，库外部无法捕获警告和错误日志。
+**实现：** 将三个 Handler 统一改为 `public`。
 
 ---
 
@@ -27,10 +27,8 @@
 **实现：** `SaveAsync(ISave, key, ct)` / `TryLoadAsync(key, ct)`，真异步 FileStream（`useAsync: true`），每 key 独立 `SemaphoreSlim` 锁，支持 `CancellationToken`。
 **测试：** 10 个 EditMode 单元测试全部通过（同步/异步/并发/取消令牌）。
 
-### 移动端路径适配
-**背景：** `任务.txt` 明确列出，Android 的 `persistentDataPath` 与桌面端行为有差异。
-**方案：** 在 `SaveContext.GetRootPath()` 中接入 `PlatformCollection` 的平台判断逻辑，统一路径获取入口。
-**注意：** 当前 `PlatformCollection` 的平台分支实际上所有路径均相同，需实际测试后补充差异处理。
+### ~~移动端路径适配~~ ⏭ 跳过
+**背景：** `Application.persistentDataPath` 在 Android/iOS 上已是正确路径，现状已够用。
 
 ### 存档格式版本控制
 **问题：** 字段顺序或类型变更后，旧存档文件无法正确加载，且无任何提示。
