@@ -8,12 +8,12 @@ namespace MortiseFrame.Capsule {
             LogHandler?.Invoke(message);
         }
 
-        internal static Action<string> LogWarningHandler;
+        public static Action<string> LogWarningHandler;
         internal static void LogWarning(string message) {
             LogWarningHandler?.Invoke(message);
         }
 
-        internal static Action<string> LogErrorHandler;
+        public static Action<string> LogErrorHandler;
         internal static void LogError(string message) {
             LogErrorHandler?.Invoke(message);
         }
