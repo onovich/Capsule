@@ -30,29 +30,25 @@
 ### ~~移动端路径适配~~ ⏭ 跳过
 **背景：** `Application.persistentDataPath` 在 Android/iOS 上已是正确路径，现状已够用。
 
-### 存档格式版本控制
-**问题：** 字段顺序或类型变更后，旧存档文件无法正确加载，且无任何提示。
-**方案：** 在文件头写入版本号（`byte` 或 `ushort`），`TryLoad` 时校验版本；提供迁移回调接口供上层处理兼容逻辑。
+### ~~存档格式版本控制~~ ✅ 已完成（2026-03-16）
+**实现：** 文件头写入 1 字节版本号（buff[0]），`TryLoad`/`TryLoadAsync` 校验版本，不匹配时返回 false 并记录 Warning。
 
 ---
 
 ## P2 — 开发体验
 
-### `GenerateHelper` 类型支持不完整
-**问题：** 当前代码生成仅处理一维数组和 `string[]`，不支持嵌套结构体、`List<T>`、`Dictionary` 等复合类型。
-**方案：** 扩展 `GetWriteMethod` / `GetReadMethod` 的类型映射，或在生成时对不支持的类型输出 `// TODO` 占位注释并警告。
+### ~~`GenerateHelper` 类型支持不完整~~ ✅ 已完成（2026-03-16）
+**实现：** 对不支持的类型生成 `// TODO: unsupported type - {name} ({typeName})` 占位注释并输出 `Debug.LogWarning`。
 
-### IDService 槽位上限过低
-**问题：** `byte` 类型上限 255，超出后 `PickSaveId` 会溢出归零，导致 key 冲突。
-**方案：** 改为 `ushort`（上限 65535），或在 `PickSaveId` 中检测溢出并抛出明确异常。
+### ~~IDService 槽位上限过低~~ ✅ 已完成（2026-03-16）
+**实现：** `byte` → `ushort`，上限从 255 提升到 65535。
 
 ---
 
 ## P3 — 安全与扩展
 
-### 存档完整性校验
-**问题：** 二进制文件损坏时 `FromBytes` 会静默读到错误数据。
-**方案：** 可选地在文件末尾附加 CRC32 校验和，`TryLoad` 时验证后再反序列化。
+### ~~存档完整性校验~~ ✅ 已完成（2026-03-16）
+**实现：** `SaveCore` 构造时 `enableCrc=true` 开启，文件末尾附加 4 字节 CRC32 校验和，读取时验证，失败时返回 false 并记录 Error。
 
-### 存档加密支持
-**方案：** 在 `FileHelper.SaveBytes` / `LoadBytes` 外层提供可选的对称加密钩子（外部注入 `Func<byte[], byte[]>`），不在库内硬编码算法。
+### ~~存档加密支持~~ ✅ 已完成（2026-03-16）
+**实现：** `SaveCore` 构造时注入 `Func<byte[], byte[]> encryptFunc/decryptFunc`，写入时先加密再算 CRC，读取时先验 CRC 再解密。

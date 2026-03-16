@@ -46,13 +46,15 @@
 
 ## 当前进度（2026-03-16）
 
-### P1 已完成
-- ✅ **异步读写支持**：`SaveAsync` / `TryLoadAsync`，真异步 FileStream（`useAsync: true`），每 key 独立 `SemaphoreSlim` 锁，支持 `CancellationToken`
-- ✅ **单元测试**：10 个 EditMode 测试全部通过（同步/异步/并发/取消令牌）
-- ✅ **Sample 改写**：`SampleEntry` 已使用异步 API
+### 已完成（v0.2.0）
+- ✅ **P0 三项**：缓冲区溢出保护、CLog Handler 可见性、FileHelper 死方法移除
+- ✅ **P1 异步读写**：`SaveAsync` / `TryLoadAsync`，真异步 FileStream（`useAsync: true`），每 key 独立 `SemaphoreSlim` 锁，支持 `CancellationToken`
+- ✅ **P1 版本控制**：文件头 1 字节版本号，TryLoad 校验版本不匹配时返回 false + LogWarning
+- ✅ **P2 IDService ushort**：key 类型从 byte 升级到 ushort，上限从 255 提升到 65535
+- ✅ **P2 GenerateHelper TODO**：不支持类型生成 TODO 注释并输出 Warning
+- ✅ **P3 CRC32 校验**：enableCrc=true 开启，文件末尾附加 4 字节 CRC32，读取时验证
+- ✅ **P3 加密钩子**：构造时注入 Func<byte[],byte[]> encryptFunc/decryptFunc，写入时先加密再算 CRC，读取时先验 CRC 再解密
+- ✅ **单元测试**：16 个 EditMode 测试全部通过（同步/异步/并发/取消令牌/版本/CRC/加密）
 
-### 待处理（参见 ROADMAP.md）
-- P0：`CLog` Warning/Error Handler 改为 `public`
-- P1：移动端路径适配、存档格式版本控制
-- P2：`GenerateHelper` 类型支持、`IDService` 槽位上限
-- P3：存档完整性校验、存档加密支持
+### ROADMAP 全部完成
+所有 P0/P1/P2/P3 项目已实现，版本号已升至 0.2.0，tag v0.2.0 已打。
