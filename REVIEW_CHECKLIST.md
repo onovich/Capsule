@@ -1,0 +1,46 @@
+# REVIEW_CHECKLIST.md
+
+提交代码前逐项确认。
+
+---
+
+## ISave 实现
+
+- [ ] 数据载体为 `struct` + `[Serializable]`，命名以 `DBModel` 结尾
+- [ ] `WriteTo` 与 `FromBytes` 中字段顺序完全一致
+- [ ] 新增字段后已重新运行 **Tools → GenerateSaveMethods**（或手动同步）
+- [ ] 字段全部为 LitIO 支持的类型（基本类型、枚举、数组、Vector3、Quaternion 等）
+
+## SaveCore 使用
+
+- [ ] `Register` 在使用前调用，key 妥善保存
+- [ ] 同类型多存档槽时 `index` 参数各不相同
+- [ ] 注册槽位总数未超过 255（`IDService` 上限）
+- [ ] 缓冲区大小（`bufferLength`）足以容纳最大存档数据
+
+## 日志
+
+- [ ] 库内部使用 `CLog`，未直接调用 `Debug.Log`
+- [ ] `CLog.LogHandler` 在使用前已从外部注册
+
+## 编辑器代码
+
+- [ ] 编辑器专用代码包裹在 `#if UNITY_EDITOR` 内
+- [ ] ScriptableObject 的 `Bake` / `Load` 方法在编辑器中验证通过
+
+## MonoBehaviour
+
+- [ ] 初始化逻辑在 `Ctor()` 中，`Start()` 仅做调用
+- [ ] `Action` 回调在 `OnDestroy` 中置 null 并移除 UI 监听
+
+## 命名与风格
+
+- [ ] 命名空间为 `MortiseFrame.Capsule`
+- [ ] 内部实现成员使用 `internal`，未误设为 `public`
+- [ ] SerializeField 字段命名格式为 `控件类型_功能名`（如 `btn_save`）
+
+## 提交信息
+
+- [ ] 格式为 `<scope> <type>: <中文描述>`
+- [ ] scope 为 `<feature>` / `<sample>` / `<engine>` 之一
+- [ ] type 为 `add` / `fix` / `update` 之一
