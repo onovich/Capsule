@@ -11,8 +11,8 @@ namespace MortiseFrame.Capsule {
 
         SaveContext ctx;
 
-        public SaveCore(int bufferLength = 4069, string path = null) {
-            this.ctx = new SaveContext(bufferLength, path);
+        public SaveCore(int bufferLength = 4069, string path = null, byte version = 1) {
+            this.ctx = new SaveContext(bufferLength, path, version);
         }
 
         public byte Register(Type saveType, string fileName, int index = 0) {
@@ -32,7 +32,13 @@ namespace MortiseFrame.Capsule {
                 return false;
             }
 
-            var offset = 0;
+            if (buff[0] != ctx.Version) {
+                CLog.LogWarning($"版本不匹配：文件版本 {buff[0]}，当前版本 {ctx.Version}；key = {key}");
+                save = null;
+                return false;
+            }
+
+            var offset = 1;
             save = ctx.GetSave(key) as ISave;
             save.FromBytes(buff, ref offset);
             CLog.Log($"Load Succ: length = {offset}; key = {key}; path = {path}");
@@ -44,7 +50,8 @@ namespace MortiseFrame.Capsule {
             byte[] buff = ctx.WriteBuffer_Get();
             ctx.WriteBuffer_Clear();
 
-            int offset = 0;
+            buff[0] = ctx.Version;
+            int offset = 1;
             save.WriteTo(buff, ref offset);
 
             if (offset > buff.Length) {
@@ -80,7 +87,8 @@ namespace MortiseFrame.Capsule {
             await sem.WaitAsync(ct);
             try {
                 byte[] buff = new byte[ctx.BufferLength];
-                int offset = 0;
+                buff[0] = ctx.Version;
+                int offset = 1;
                 save.WriteTo(buff, ref offset);
 
                 if (offset > buff.Length) {
@@ -116,7 +124,12 @@ namespace MortiseFrame.Capsule {
                 byte[] buff = new byte[ctx.BufferLength];
                 await FileHelper.LoadBytesAsync(path, buff, ct);
 
-                int offset = 0;
+                if (buff[0] != ctx.Version) {
+                    CLog.LogWarning($"版本不匹配：文件版本 {buff[0]}，当前版本 {ctx.Version}；key = {key}");
+                    return (false, null);
+                }
+
+                int offset = 1;
                 var save = ctx.GetSave(key) as ISave;
                 save.FromBytes(buff, ref offset);
 

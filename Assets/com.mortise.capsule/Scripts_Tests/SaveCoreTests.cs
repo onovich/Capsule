@@ -144,6 +144,34 @@ namespace MortiseFrame.Capsule.Tests {
                 async () => await core.TryLoadAsync(key, cts.Token));
         }
 
+        // ── 版本控制测试 ──────────────────────────────────────────
+
+        [Test]
+        public void Version_Match_Returns_True() {
+            var core1 = new SaveCore(bufferLength: 256, path: testRoot, version: 1);
+            var key = core1.Register(typeof(MockSave), "version_match.bin");
+            core1.Save(new MockSave { IntValue = 7 }, key);
+
+            var core2 = new SaveCore(bufferLength: 256, path: testRoot, version: 1);
+            var key2 = core2.Register(typeof(MockSave), "version_match.bin");
+            var loaded = core2.TryLoad(key2, out ISave result);
+            Assert.IsTrue(loaded);
+            Assert.AreEqual(7, ((MockSave)result).IntValue);
+        }
+
+        [Test]
+        public void Version_Mismatch_Returns_False() {
+            var core1 = new SaveCore(bufferLength: 256, path: testRoot, version: 1);
+            var key = core1.Register(typeof(MockSave), "version_mismatch.bin");
+            core1.Save(new MockSave { IntValue = 7 }, key);
+
+            var core2 = new SaveCore(bufferLength: 256, path: testRoot, version: 2);
+            var key2 = core2.Register(typeof(MockSave), "version_mismatch.bin");
+            var loaded = core2.TryLoad(key2, out ISave result);
+            Assert.IsFalse(loaded);
+            Assert.IsNull(result);
+        }
+
     }
 
 }

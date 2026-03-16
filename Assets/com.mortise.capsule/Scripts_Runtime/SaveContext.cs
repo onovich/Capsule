@@ -28,7 +28,11 @@ namespace MortiseFrame.Capsule {
         internal string RootPath => GetRootPath();
         internal int BufferLength => readBuffer.Length;
 
-        internal SaveContext(int bufferLength, string path) {
+        // Version
+        byte version;
+        internal byte Version => version;
+
+        internal SaveContext(int bufferLength, string path, byte version) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
             protocolDicts = new BiDictionary<byte, (Type, int)>();
@@ -36,6 +40,7 @@ namespace MortiseFrame.Capsule {
             idService = new IDService();
             keyLocks = new Dictionary<byte, SemaphoreSlim>();
             this.rootPath = path;
+            this.version = version;
         }
 
         // Path
