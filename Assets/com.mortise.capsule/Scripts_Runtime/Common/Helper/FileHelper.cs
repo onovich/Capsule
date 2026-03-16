@@ -24,32 +24,6 @@ namespace MortiseFrame.Capsule {
             return File.Exists(path);
         }
 
-        public static void WriteFileToPersistent(string filename, byte[] data) {
-            string path = Path.Combine(GetPersistentDir(), filename);
-            SaveBytes(path, data, data.Length);
-        }
-
-        public static void CreateDirIfNotExist(string dir) {
-            string path = Path.Combine(GetPersistentDir(), dir);
-            if (!Directory.Exists(path)) {
-                Directory.CreateDirectory(path);
-            }
-        }
-
-        public static byte[] ReadFileFromPersistent(string filename) {
-            string path = Path.Combine(GetPersistentDir(), filename);
-            if (File.Exists(path)) {
-                return File.ReadAllBytes(path);
-            } else {
-                Debug.LogError($"File not found: {path}");
-                return null;
-            }
-        }
-
-        public static string GetPersistentDir() {
-            return Application.persistentDataPath;
-        }
-
     }
 
 }
