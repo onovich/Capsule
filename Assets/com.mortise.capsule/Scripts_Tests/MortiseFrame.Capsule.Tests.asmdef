@@ -1,0 +1,22 @@
+{
+    "name": "MortiseFrame.Capsule.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bee4e5034d719451e88c672e635f3782",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

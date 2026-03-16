@@ -1,0 +1,149 @@
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using MortiseFrame.Capsule;
+
+namespace MortiseFrame.Capsule.Tests {
+
+    [TestFixture]
+    public class SaveCoreTests {
+
+        string testRoot;
+        SaveCore core;
+
+        [SetUp]
+        public void SetUp() {
+            testRoot = Path.Combine(Path.GetTempPath(), "CapsuleTests_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(testRoot);
+            core = new SaveCore(bufferLength: 256, path: testRoot);
+        }
+
+        [TearDown]
+        public void TearDown() {
+            core.Clear();
+            if (Directory.Exists(testRoot)) {
+                Directory.Delete(testRoot, recursive: true);
+            }
+        }
+
+        // ── 同步测试 ──────────────────────────────────────────────
+
+        [Test]
+        public void Sync_Save_And_Load_RoundTrip() {
+            var key = core.Register(typeof(MockSave), "mock.bin");
+            var original = new MockSave { IntValue = 42, FloatValue = 3.14f };
+            core.Save(original, key);
+
+            var loaded = core.TryLoad(key, out ISave result);
+            Assert.IsTrue(loaded);
+            var mock = result as MockSave;
+            Assert.IsNotNull(mock);
+            Assert.AreEqual(42, mock.IntValue);
+            Assert.AreEqual(3.14f, mock.FloatValue, delta: 0.0001f);
+        }
+
+        [Test]
+        public void Sync_TryLoad_Returns_False_When_File_Missing() {
+            var key = core.Register(typeof(MockSave), "missing.bin");
+            var loaded = core.TryLoad(key, out ISave result);
+            Assert.IsFalse(loaded);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void Sync_Save_Throws_On_Buffer_Overflow() {
+            var key = core.Register(typeof(OversizeMockSave), "oversize.bin");
+            var oversize = new OversizeMockSave(512);
+            Assert.Throws<InvalidOperationException>(() => core.Save(oversize, key));
+        }
+
+        // ── 异步测试 ──────────────────────────────────────────────
+
+        [Test]
+        public async Task Async_SaveAsync_And_TryLoadAsync_RoundTrip() {
+            var key = core.Register(typeof(MockSave), "async_mock.bin");
+            var original = new MockSave { IntValue = 99, FloatValue = 2.71f };
+            await core.SaveAsync(original, key);
+
+            var (success, save) = await core.TryLoadAsync(key);
+            Assert.IsTrue(success);
+            var mock = save as MockSave;
+            Assert.IsNotNull(mock);
+            Assert.AreEqual(99, mock.IntValue);
+            Assert.AreEqual(2.71f, mock.FloatValue, delta: 0.0001f);
+        }
+
+        [Test]
+        public async Task Async_TryLoadAsync_Returns_False_When_File_Missing() {
+            var key = core.Register(typeof(MockSave), "async_missing.bin");
+            var (success, save) = await core.TryLoadAsync(key);
+            Assert.IsFalse(success);
+            Assert.IsNull(save);
+        }
+
+        [Test]
+        public async Task Async_SaveAsync_Throws_On_Buffer_Overflow() {
+            var key = core.Register(typeof(OversizeMockSave), "async_oversize.bin");
+            var oversize = new OversizeMockSave(512);
+            Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await core.SaveAsync(oversize, key));
+        }
+
+        [Test]
+        public async Task Async_ConcurrentWrites_SameKey_AreSerialised() {
+            var key = core.Register(typeof(MockSave), "concurrent_same.bin");
+            var tasks = new Task[10];
+            for (int i = 0; i < 10; i++) {
+                int captured = i;
+                tasks[i] = core.SaveAsync(new MockSave { IntValue = captured, FloatValue = captured }, key);
+            }
+            await Task.WhenAll(tasks);
+
+            var (success, save) = await core.TryLoadAsync(key);
+            Assert.IsTrue(success);
+            Assert.IsNotNull(save as MockSave);
+        }
+
+        [Test]
+        public async Task Async_ConcurrentWrites_DifferentKeys_RunConcurrently() {
+            var key1 = core.Register(typeof(MockSave), "concurrent_key1.bin", 0);
+            var key2 = core.Register(typeof(MockSave), "concurrent_key2.bin", 1);
+
+            await Task.WhenAll(
+                core.SaveAsync(new MockSave { IntValue = 1, FloatValue = 1.0f }, key1),
+                core.SaveAsync(new MockSave { IntValue = 2, FloatValue = 2.0f }, key2)
+            );
+
+            var (ok1, r1) = await core.TryLoadAsync(key1);
+            var (ok2, r2) = await core.TryLoadAsync(key2);
+            Assert.IsTrue(ok1);
+            Assert.IsTrue(ok2);
+            Assert.AreEqual(1, ((MockSave)r1).IntValue);
+            Assert.AreEqual(2, ((MockSave)r2).IntValue);
+        }
+
+        [Test]
+        public void Async_SaveAsync_Throws_On_Cancelled_Token() {
+            var key = core.Register(typeof(MockSave), "cancel_save.bin");
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(
+                async () => await core.SaveAsync(new MockSave { IntValue = 1 }, key, cts.Token));
+        }
+
+        [Test]
+        public async Task Async_TryLoadAsync_Throws_On_Cancelled_Token() {
+            var key = core.Register(typeof(MockSave), "cancel_load.bin");
+            await core.SaveAsync(new MockSave { IntValue = 1 }, key);
+
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(
+                async () => await core.TryLoadAsync(key, cts.Token));
+        }
+
+    }
+
+}
