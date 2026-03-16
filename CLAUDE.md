@@ -89,10 +89,11 @@ bash build_check.sh
 更新版本号时需同步以下步骤：
 
 1. 修改 `Assets/com.mortise.capsule/package.json` 中的 `version` 字段
-2. 提交：`<feature> update: 版本号升至 x.y.z`
+2. 提交：`<version> x.y.z`（注意：不写 "版本号升至"，直接写版本号）
 3. 打 tag：`git tag vx.y.z`
 4. 推送：`git push origin main && git push origin vx.y.z`
 
+**重要：** 版本号提交与打 tag 必须同时进行，commit message 格式为 `<version> x.y.z`。
 
 
 格式：`<scope> <type>: <描述>`，描述使用中文。详见 [CODING_STYLE.md](CODING_STYLE.md)。
@@ -100,7 +101,10 @@ bash build_check.sh
 ```
 <feature> add: 描述
 <feature> fix: 描述
+<feature> modify: 描述
 <sample> fix: 描述
 <doc> add: 描述
+<doc> modify: 描述
 <engine> update: 引擎版本号
+<version> x.y.z
 ```

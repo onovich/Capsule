@@ -38,9 +38,11 @@
 ## 版本发布流程
 
 1. 修改 `Assets/com.mortise.capsule/package.json` 的 `version` 字段
-2. 提交：`<feature> update: 版本号升至 x.y.z`
+2. 提交：`<version> x.y.z`（直接写版本号，不写 "版本号升至"）
 3. 打 tag：`git tag vx.y.z`
 4. 推送：`git push origin main && git push origin vx.y.z`
+
+**注意：** 版本号提交必须使用 `<version>` scope，不使用 `<feature> update`。
 
 ---
 

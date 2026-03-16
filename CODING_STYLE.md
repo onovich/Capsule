@@ -132,14 +132,16 @@ CLog.LogHandler = Debug.Log;
 |------|------|
 | `add` | 新增功能 |
 | `fix` | 缺陷修复 |
-| `update` | 已有功能更新或重构 |
+| `modify` | 已有功能修改或重构 |
 
 示例：
 ```
 <feature> add: 支持同类型多存档槽
 <feature> fix: Save 应传入 key
+<feature> modify: IDService key 类型 byte→ushort
 <sample> fix: Sample 报错
 <doc> add: 新增架构指南文档
-<doc> update: 完善编译检查流程说明
+<doc> modify: 完善编译检查流程说明
 <engine> update: 2023.2.22f1
+<version> 0.2.0
 ```
