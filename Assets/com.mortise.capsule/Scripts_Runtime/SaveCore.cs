@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using MortiseFrame.LitIO;
 using UnityEngine;
 
@@ -70,6 +72,59 @@ namespace MortiseFrame.Capsule {
 
         public void Clear() {
             ctx.Clear();
+        }
+
+        public async Task<string> SaveAsync(ISave save, byte key,
+            CancellationToken ct = default) {
+            var sem = ctx.GetOrCreateLock(key);
+            await sem.WaitAsync(ct);
+            try {
+                byte[] buff = new byte[ctx.BufferLength];
+                int offset = 0;
+                save.WriteTo(buff, ref offset);
+
+                if (offset > buff.Length) {
+                    throw new InvalidOperationException(
+                        $"存档数据超出缓冲区大小！需要 {offset} 字节，但缓冲区只有 {buff.Length} 字节。" +
+                        $"请在 SaveCore 构造时增大 bufferLength 参数。"
+                    );
+                }
+
+                var saveName = ctx.GetSaveFileName(key);
+                var path = Path.Combine(ctx.RootPath, saveName);
+                await FileHelper.SaveBytesAsync(path, buff, offset, ct);
+
+                CLog.Log($"SaveAsync Succ: length = {offset}; key = {key}; path = {path}");
+                return path;
+            } finally {
+                sem.Release();
+            }
+        }
+
+        public async Task<(bool success, ISave save)> TryLoadAsync(byte key,
+            CancellationToken ct = default) {
+            var sem = ctx.GetOrCreateLock(key);
+            await sem.WaitAsync(ct);
+            try {
+                var saveName = ctx.GetSaveFileName(key);
+                var path = Path.Combine(ctx.RootPath, saveName);
+
+                if (!FileHelper.Exists(path)) {
+                    return (false, null);
+                }
+
+                byte[] buff = new byte[ctx.BufferLength];
+                await FileHelper.LoadBytesAsync(path, buff, ct);
+
+                int offset = 0;
+                var save = ctx.GetSave(key) as ISave;
+                save.FromBytes(buff, ref offset);
+
+                CLog.Log($"TryLoadAsync Succ: length = {offset}; key = {key}; path = {path}");
+                return (true, save);
+            } finally {
+                sem.Release();
+            }
         }
 
     }

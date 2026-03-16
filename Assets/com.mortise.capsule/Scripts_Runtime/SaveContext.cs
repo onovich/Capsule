@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 
 namespace MortiseFrame.Capsule {
@@ -19,15 +20,21 @@ namespace MortiseFrame.Capsule {
         IDService idService;
         internal IDService IDService => idService;
 
+        // Lock
+        Dictionary<byte, SemaphoreSlim> keyLocks;
+
         // Path
         string rootPath;
         internal string RootPath => GetRootPath();
+        internal int BufferLength => readBuffer.Length;
+
         internal SaveContext(int bufferLength, string path) {
             readBuffer = new byte[bufferLength];
             writeBuffer = new byte[bufferLength];
             protocolDicts = new BiDictionary<byte, (Type, int)>();
             fileNameDict = new Dictionary<byte, string>();
             idService = new IDService();
+            keyLocks = new Dictionary<byte, SemaphoreSlim>();
             this.rootPath = path;
         }
 
@@ -65,7 +72,18 @@ namespace MortiseFrame.Capsule {
             }
             var key = GetKey(saveType, index);
             fileNameDict[key] = fileName;
+            if (!keyLocks.ContainsKey(key)) {
+                keyLocks[key] = new SemaphoreSlim(1, 1);
+            }
             return key;
+        }
+
+        internal SemaphoreSlim GetOrCreateLock(byte key) {
+            if (!keyLocks.TryGetValue(key, out var sem)) {
+                sem = new SemaphoreSlim(1, 1);
+                keyLocks[key] = sem;
+            }
+            return sem;
         }
 
         internal object GetSave(byte id) {
@@ -130,6 +148,10 @@ namespace MortiseFrame.Capsule {
             protocolDicts.Clear();
             fileNameDict.Clear();
             idService.Reset();
+            foreach (var kvp in keyLocks) {
+                kvp.Value.Dispose();
+            }
+            keyLocks.Clear();
         }
 
     }
