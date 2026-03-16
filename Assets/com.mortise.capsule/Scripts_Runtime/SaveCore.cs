@@ -45,6 +45,13 @@ namespace MortiseFrame.Capsule {
             int offset = 0;
             save.WriteTo(buff, ref offset);
 
+            if (offset > buff.Length) {
+                throw new InvalidOperationException(
+                    $"存档数据超出缓冲区大小！需要 {offset} 字节，但缓冲区只有 {buff.Length} 字节。" +
+                    $"请在 SaveCore 构造时增大 bufferLength 参数。"
+                );
+            }
+
             var saveName = ctx.GetSaveFileName(key);
             var path = Path.Combine(ctx.RootPath, saveName);
             FileHelper.SaveBytes(path, buff, offset);
