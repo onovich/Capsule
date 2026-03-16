@@ -84,7 +84,16 @@ bash build_check.sh
 - `MortiseFrame.Capsule` — 运行时程序集，引用 LitIO
 - `MortiseFrame.Capsule.Sample` — 示例程序集，同时引用两者
 
-## 提交信息规范
+### 版本发布
+
+更新版本号时需同步以下步骤：
+
+1. 修改 `Assets/com.mortise.capsule/package.json` 中的 `version` 字段
+2. 提交：`<feature> update: 版本号升至 x.y.z`
+3. 打 tag：`git tag vx.y.z`
+4. 推送：`git push origin main && git push origin vx.y.z`
+
+
 
 格式：`<scope> <type>: <描述>`，描述使用中文。详见 [CODING_STYLE.md](CODING_STYLE.md)。
 

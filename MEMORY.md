@@ -35,6 +35,15 @@
 
 ---
 
+## 版本发布流程
+
+1. 修改 `Assets/com.mortise.capsule/package.json` 的 `version` 字段
+2. 提交：`<feature> update: 版本号升至 x.y.z`
+3. 打 tag：`git tag vx.y.z`
+4. 推送：`git push origin main && git push origin vx.y.z`
+
+---
+
 ## 当前进度（2026-03-16）
 
 ### P1 已完成
