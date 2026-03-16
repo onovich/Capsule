@@ -94,7 +94,7 @@ namespace MortiseFrame.Capsule {
             foreach (string line in lines) {
                 if (string.IsNullOrWhiteSpace(line)) {
                     blankLineCount++;
-                    if (blankLineCount < 2) {  // Only keep one blank line
+                    if (blankLineCount < 2) {
                         processedContent.AppendLine(line);
                     }
                 } else {
@@ -154,7 +154,10 @@ namespace MortiseFrame.Capsule {
             StringBuilder methodBuilder = new StringBuilder();
             foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Instance)) {
                 string methodName = operation == "Write" ? GetWriteMethod(field.FieldType) : GetReadMethod(field.FieldType);
-                if (!string.IsNullOrEmpty(methodName)) {
+                if (string.IsNullOrEmpty(methodName)) {
+                    methodBuilder.AppendLine($"\t\t\t// TODO: unsupported type - {field.Name} ({field.FieldType.Name})");
+                    Debug.LogWarning($"[GenerateHelper] Unsupported type for field '{field.Name}' ({field.FieldType.Name}) in type '{type.Name}'. Generated TODO comment.");
+                } else {
                     bool isEnum = field.FieldType.IsEnum;
                     string enumUnderlyingType = isEnum ? $"({GetEnumUnderlyingType(field.FieldType).Name})" : "";
                     string enumType = isEnum ? $"({field.FieldType.Name})" : "";
