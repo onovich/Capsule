@@ -1,30 +1,30 @@
 # Capsule
 
-[简体中文](README.zh-CN.md)
+[English](README.md)
 
-A lightweight binary save library for small single-player Unity games.
+适合小型单机游戏的轻量二进制本地存档库。
 
-![Capsule cover](docs/cover.png)
+![Capsule 封面](docs/cover.png)
 
-## What it includes
+## 项目包含什么
 
-- Binary local saves.
-- Generated serialization helpers.
-- Unity package, sample, and tests.
+- 二进制本地存档。
+- 生成序列化辅助代码。
+- 包含 Unity 包、示例和测试。
 
-## Getting started
+## 快速开始
 
-In Unity, open **Window → Package Manager**, choose **Add package from git URL**, and enter:
+在 Unity 中打开 **Window → Package Manager**，选择 **Add package from git URL**，输入：
 
 ```text
 https://github.com/onovich/Capsule.git?path=/Assets/com.mortise.capsule#main
 ```
 
-The package metadata declares Unity `2019.4` or later.
+包元数据声明支持 Unity `2019.4` 及以上版本。
 
-The repository can also be opened as a Unity sample project.
+仓库本身也可以作为 Unity 示例工程打开。
 
-## Example
+## 示例
 
 ```csharp
 // Data
@@ -50,13 +50,13 @@ public struct SampleRoleDBModel : ISave {
 }
 ```
 
-## Repository map
+## 仓库结构
 
-- `Assets/` — Unity scripts, scenes, packages, and authored assets.
-- `Packages/` — Unity package dependencies.
-- `ProjectSettings/` — Unity project configuration.
+- `Assets/` — Unity 脚本、场景、包与项目资源。
+- `Packages/` — Unity 包依赖。
+- `ProjectSettings/` — Unity 工程配置。
 
-## Documentation
+## 文档
 
 - [`ARCHITECTURE_GUIDE.md`](ARCHITECTURE_GUIDE.md)
 - [`ROADMAP.md`](ROADMAP.md)
@@ -64,15 +64,15 @@ public struct SampleRoleDBModel : ISave {
 - [`CODING_STYLE.md`](CODING_STYLE.md)
 - [`MEMORY.md`](MEMORY.md)
 
-## Related projects
+## 相关项目
 
 - [Oshi](https://github.com/onovich/Oshi)
 - [LitIO](https://github.com/onovich/LitIO)
 
-## Status
+## 当前状态
 
-Mac and Windows have been tested. Android, iOS, and WebGL have not. Nested save structures and save-file schema upgrades are not supported, so changing fields can invalidate older saves.
+目前已测试 Mac 和 Windows，尚未测试 Android、iOS 和 WebGL。它不支持多层嵌套和存档结构升级，调整字段可能导致旧存档失效。
 
-## License
+## 许可证
 
-This repository is licensed under [MIT](LICENSE).
+本仓库采用 [MIT](LICENSE) 许可证。
